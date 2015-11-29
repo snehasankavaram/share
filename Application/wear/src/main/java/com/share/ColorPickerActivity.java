@@ -2,12 +2,15 @@ package com.share;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.wearable.view.WatchViewStub;
+import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 public class ColorPickerActivity extends Activity {
-
+    ImageView[] imageViews = new ImageView[4];
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,11 +23,34 @@ public class ColorPickerActivity extends Activity {
                 ImageView i2 = (ImageView) findViewById(R.id.imageView2);
                 ImageView i3 = (ImageView) findViewById(R.id.imageView3);
                 ImageView i4 = (ImageView) findViewById(R.id.imageView4);
+
                 i1.setBackgroundColor(Color.parseColor("#78A85C"));
                 i2.setBackgroundColor(Color.parseColor("#46806D"));
                 i3.setBackgroundColor(Color.parseColor("#C08669"));
                 i4.setBackgroundColor(Color.parseColor("#B06073"));
+
+                imageViews[0] = i1;
+                imageViews[1] = i2;
+                imageViews[2] = i3;
+                imageViews[3] = i4;
+
+                for (ImageView i : imageViews) {
+                    i.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            sendColorToPhone((ImageView) v);
+                        }
+                    });
+                }
             }
         });
+    }
+
+//    Will send a server POST request of (color, timestamp, location) -> user_id
+    private void sendColorToPhone(ImageView v) {
+        ColorDrawable drawable = (ColorDrawable) v.getBackground();
+        String c = String.format("#%06X", (0xFFFFFF & drawable.getColor()));
+        Log.d("Color", c);
+
     }
 }
