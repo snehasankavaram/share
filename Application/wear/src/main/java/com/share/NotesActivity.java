@@ -53,8 +53,8 @@ public class NotesActivity extends Activity {
                                 y2 = event.getY();
                                 float deltaY = y2 - y1;
                                 if (Math.abs(deltaY) > MIN_DISTANCE) {
-                                    // Swipe from bottom to top
-                                    if (y1 > y2) {
+                                    // Swipe from top to bottom
+                                    if (y2 > y1) {
                                         Intent i = new Intent(getApplicationContext(), WatchContactsActivity.class);
                                         startActivity(i);
                                         return true;

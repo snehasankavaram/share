@@ -21,6 +21,9 @@ public class WatchContactsActivity extends Activity {
     private DismissOverlayView mDismissOverlayView;
     private GestureDetector mGestureDetector;
 
+    private float x1, x2;
+    private float y1, y2;
+    static final int MIN_DISTANCE = 150;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +54,40 @@ public class WatchContactsActivity extends Activity {
                     }
                 });
 
+                final View.OnTouchListener listener = new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        switch(event.getAction())
+                        {
+                            case MotionEvent.ACTION_DOWN:
+                                x1 = event.getX();
+                                y1 = event.getY();
+                                break;
+                            case MotionEvent.ACTION_UP:
+                                x2 = event.getX();
+                                y2 = event.getY();
+                                float deltaX = x2 - x1;
+                                if (Math.abs(deltaX) > MIN_DISTANCE)
+                                {
+                                    Contact c = (Contact) getIntent().getSerializableExtra("contact");
+                                    // Right to left swipe action
+                                    if (x2 < x1)
+                                    {
+                                        Intent i = new Intent(getApplicationContext(), ConnectActivity.class);
+                                        startActivity(i);
+                                    }
+                                    return true;
+                                }
+                                break;
+                        }
+                        return false;
+                    }
+                };
                 mGridView.setOnTouchListener(new View.OnTouchListener() {
 
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
-                        return mGestureDetector.onTouchEvent(event);
+                        return mGestureDetector.onTouchEvent(event) || listener.onTouch(v, event);
                     }
                 });
 

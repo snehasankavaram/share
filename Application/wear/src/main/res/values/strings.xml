@@ -5,4 +5,6 @@
     <string name="title_activity_profile">ProfileActivity</string>
     <string name="title_activity_notes">NotesActivity</string>
     <string name="title_activity_files">FilesActivity</string>
+    <string name="title_activity_connect">ConnectActivity</string>
+    <string name="title_activity_color_picker">ColorPickerActivity</string>
 </resources>
