@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.wearable.view.BoxInsetLayout xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
 android:layout_height="match_parent" tools:context=".WatchContactsActivity"
 tools:deviceIds="wear_square"
-android:id="@+id/grid"
-android:numColumns="2">
-
-</GridView>
+>
+<GridLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/grid"
+    android:numColumns="2" />
+</android.support.wearable.view.BoxInsetLayout>

@@ -6,21 +6,35 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+import com.example.james.sharedclasses.Contact;
+import com.example.james.sharedclasses.Profile;
+
+import java.util.ArrayList;
+
 /**
  * Created by james on 11/28/15.
  */
 public class ContactsAdapter extends BaseAdapter {
+    ArrayList<Contact> contactsList = new ArrayList<>();
+    //create random contacts for now, but fetch contacts from backend and add to ArrayList
+    String [] names = {"Sally Smith", "Bob Jones", "Dylan Christopher Johnson", "Carry George", "Jonas Thomson"};
+    String [] occupations = {"CEO", "Software Engineer", "Self employed", "Artist", "Writer"};
+
     private Context ctx = null;
-    private String[] contacts = { "Bob", "Joe",
-            "Sarah", "James", "John", "Jacqueline", "Diane", "Janet", "George"};
 
     public ContactsAdapter(Context context) {
         this.ctx = context;
+
+        for (int i = 0; i < names.length; i++) {
+            Profile p = new Profile(names[i], occupations[i]);
+            Contact c = new Contact(p);
+            contactsList.add(c);
+        }
     }
 
     @Override
     public int getCount() {
-        return contacts.length;
+        return contactsList.size();
     }
 
     @Override
@@ -30,7 +44,7 @@ public class ContactsAdapter extends BaseAdapter {
         imgView.setPadding(8, 8, 8, 8);
         imgView.setImageResource(R.drawable.face4);
         imgView.setAdjustViewBounds(Boolean.TRUE);
-        imgView.setContentDescription(contacts[arg0]);
+        imgView.setContentDescription(contactsList.get(arg0).getProfile().getName());
         imgView.setMaxHeight(100);
         imgView.setMaxWidth(100);
 
@@ -44,6 +58,6 @@ public class ContactsAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int arg0) {
-        return contacts[arg0];
+        return contactsList.get(arg0);
     }
 }

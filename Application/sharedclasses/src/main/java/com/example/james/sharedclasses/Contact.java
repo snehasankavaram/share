@@ -13,7 +13,6 @@ public class Contact implements Serializable {
     private ArrayList<Note> notes;
     private ArrayList <File> files;
 
-
     public Contact(Profile profile) {
         this.profile = profile;
     }
