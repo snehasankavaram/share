@@ -13,6 +13,7 @@ import com.example.james.sharedclasses.Contact;
 public class FilesActivity extends Activity {
 
     private float x1, x2;
+    private float y1, y2;
     static final int MIN_DISTANCE = 150;
 
     @Override
@@ -31,6 +32,7 @@ public class FilesActivity extends Activity {
                         {
                             case MotionEvent.ACTION_DOWN:
                                 x1 = event.getX();
+                                y1 = event.getY();
                                 break;
                             case MotionEvent.ACTION_UP:
                                 x2 = event.getX();
@@ -44,8 +46,21 @@ public class FilesActivity extends Activity {
                                         Intent i = new Intent(getApplicationContext(), ProfileActivity.class);
                                         i.putExtra("contact", c);
                                         startActivity(i);
+                                        return true;
                                     }
                                 }
+
+                                y2 = event.getY();
+                                float deltaY = y2 - y1;
+                                if (Math.abs(deltaY) > MIN_DISTANCE) {
+                                    // Swipe from bottom to top
+                                    if (y1 > y2) {
+                                        Intent i = new Intent(getApplicationContext(), WatchContactsActivity.class);
+                                        startActivity(i);
+                                        return true;
+                                    }
+                                }
+                                
                                 break;
                         }
                         return true;
