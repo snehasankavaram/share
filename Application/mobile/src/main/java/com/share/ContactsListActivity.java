@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.james.sharedclasses.Contact;
+import com.example.james.sharedclasses.ContactsAdapter;
 import com.example.james.sharedclasses.Profile;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class ContactsListActivity extends Activity implements Observer{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
 
-        ArrayList <Contact> contactsList = new ArrayList<Contact>();
+        ArrayList <Contact> contactsList = new ArrayList<>();
 
         //create random contacts for now, but fetch contacts from backend and add to ArrayList
         String [] names = {"Sally Smith", "Bob Jones", "Dylan Christopher Johnson", "Carry George", "Jonas Thomson"};
