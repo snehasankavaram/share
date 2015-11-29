@@ -57,6 +57,9 @@ public class WatchContactsActivity extends Activity {
                 final View.OnTouchListener listener = new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
+                        if (mDismissOverlayView != null && mDismissOverlayView.getVisibility() == View.VISIBLE) {
+                            return false;
+                        }
                         switch(event.getAction())
                         {
                             case MotionEvent.ACTION_DOWN:
@@ -83,6 +86,7 @@ public class WatchContactsActivity extends Activity {
                         return false;
                     }
                 };
+
                 mGridView.setOnTouchListener(new View.OnTouchListener() {
 
                     @Override
