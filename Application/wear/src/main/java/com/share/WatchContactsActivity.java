@@ -48,7 +48,7 @@ public class WatchContactsActivity extends Activity {
                 mGridView.setOnItemClickListener(new OnItemClickListener() {
                     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                         Contact c = (Contact) mGridView.getAdapter().getItem(position);
-                        Intent i = new Intent(getApplicationContext(), ProfileActivity.class);
+                        Intent i = new Intent(getApplicationContext(), ContactActivity.class);
                         i.putExtra("contact", c);
                         startActivity(i);
                     }
