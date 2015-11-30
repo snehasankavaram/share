@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.james.sharedclasses.Profile;
 
@@ -29,7 +30,20 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        TextView name = (TextView) view.findViewById(R.id.contact_name);
+        TextView phone = (TextView) view.findViewById(R.id.contact_phone);
+        TextView occupation = (TextView) view.findViewById(R.id.contact_occupation);
+
+        Bundle args = getArguments();
+        Profile p = (Profile) args.get("profile");
+        if (p != null) {
+            name.setText(p.getName());
+            phone.setText("925-351-1211");
+            occupation.setText(p.getOccupation());
+        }
+
+        return view;
     }
 
 }

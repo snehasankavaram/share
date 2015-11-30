@@ -10,13 +10,14 @@ import android.support.wearable.view.WatchViewStub;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
+import com.example.james.sharedclasses.Profile;
+
 public class MainActivity extends FragmentActivity {
     private static final int NUM_PAGES = 3;
     private MyViewPager mPager;
     private PagerAdapter mPagerAdapter;
     private DismissOverlayView mDismissOverlayView;
     private GestureDetector mGestureDetector;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,12 +62,15 @@ public class MainActivity extends FragmentActivity {
                     } return contacts;
                 case 1:
                     if (connect == null) {
-                        connect = new FileFragment();
+                        connect = new ConnectFragment();
 
                     } return connect;
                 case 2:
                     if (profile == null) {
-                        profile = new NotesFragment();
+                        Bundle args = new Bundle();
+                        args.putSerializable("profile", getSelf());
+                        profile = new ProfileFragment();
+                        profile.setArguments(args);
                     } return profile;
 
             }
@@ -76,6 +80,11 @@ public class MainActivity extends FragmentActivity {
         @Override
         public int getCount() {
             return NUM_PAGES;
+        }
+
+        private Profile getSelf() {
+            Profile p = new Profile("Sarah Hyun", "Developer");
+            return p;
         }
     }
 }

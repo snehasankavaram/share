@@ -4,14 +4,37 @@
     android:layout_height="match_parent"
     tools:context="com.share.ProfileFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/face4"
+        android:layout_marginTop="24dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/imageView" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Profile"
-        android:id="@+id/textView2"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="24dp" />
+        android:text="Name"
+        android:id="@+id/contact_name"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/imageView"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Occupation"
+        android:id="@+id/contact_occupation"
+        android:layout_below="@+id/contact_name"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Phone #"
+        android:id="@+id/contact_phone"
+        android:layout_below="@+id/contact_occupation"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>
