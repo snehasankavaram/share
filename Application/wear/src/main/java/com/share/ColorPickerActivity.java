@@ -1,6 +1,7 @@
 package com.share;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -39,6 +40,8 @@ public class ColorPickerActivity extends Activity {
                         @Override
                         public void onClick(View v) {
                             sendColorToPhone((ImageView) v);
+                            Intent i = new Intent(getApplicationContext(), AcceptConnectionActivity.class);
+                            startActivity(i);
                         }
                     });
                 }

@@ -14,16 +14,24 @@
             android:label="@string/title_activity_main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".ColorPickerActivity"
-            android:label="@string/title_activity_color_picker">
-        </activity>
+            android:label="@string/title_activity_color_picker"></activity>
         <activity
             android:name=".ContactActivity"
-            android:label="@string/title_activity_contact">
+            android:label="@string/title_activity_contact"></activity>
+        <activity
+            android:name=".AcceptConnectionActivity"
+            android:label="@string/title_activity_accept_connection">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 
