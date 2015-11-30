@@ -18,10 +18,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ConnectActivity"
-            android:label="@string/title_activity_connect">
-        </activity>
-        <activity
             android:name=".ColorPickerActivity"
             android:label="@string/title_activity_color_picker">
         </activity>
