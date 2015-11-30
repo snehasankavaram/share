@@ -47,7 +47,7 @@ public class ContactActivity extends FragmentActivity {
                                 if (Math.abs(deltaY) > MIN_DISTANCE) {
                                     // Swipe from top to bottom
                                     if (y2 > y1) {
-                                        Intent i = new Intent(getApplicationContext(), WatchContactsActivity.class);
+                                        Intent i = new Intent(getApplicationContext(), MainActivity.class);
                                         startActivity(i);
                                         return true;
                                     }
