@@ -3,6 +3,8 @@ package com.share;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,7 +14,11 @@ import android.widget.ListView;
 import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.ContactsAdapter;
 import com.example.james.sharedclasses.Profile;
+import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.util.ArrayList;
 import java.util.Observable;
@@ -56,7 +62,42 @@ public class ContactsListActivity extends AppCompatActivity implements Observer{
             }
         });
 
-        new DrawerBuilder().withActivity(this).build();
+        // Handle Toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withName("My profile");
+        PrimaryDrawerItem item2 = new PrimaryDrawerItem().withName("My files");
+        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withName("My contacts");
+
+        new DrawerBuilder()
+                .withActivity(this)
+                .addDrawerItems(
+                        item1,
+                        new DividerDrawerItem(),
+                        item2,
+                        new DividerDrawerItem(),
+                        item3
+                )
+                .withToolbar(toolbar)
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        switch (position) {
+                            case 0:
+                                Log.d("Hamburger", "Clicked profile");
+                                break;
+                            case 2:
+                                Log.d("Hamburger", "Clicked files");
+                                break;
+                            case 4:
+                                Log.d("Hamburger", "Clicked contact");
+                                break;
+                        }
+                        return false;
+                    }
+                })
+                .build();
     }
 
     @Override
