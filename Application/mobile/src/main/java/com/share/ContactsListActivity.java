@@ -1,8 +1,8 @@
 package com.share;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,12 +12,13 @@ import android.widget.ListView;
 import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.ContactsAdapter;
 import com.example.james.sharedclasses.Profile;
+import com.mikepenz.materialdrawer.DrawerBuilder;
 
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-public class ContactsListActivity extends Activity implements Observer{
+public class ContactsListActivity extends AppCompatActivity implements Observer{
 
     private ContactsAdapter adapter;
 
@@ -55,6 +56,7 @@ public class ContactsListActivity extends Activity implements Observer{
             }
         });
 
+        new DrawerBuilder().withActivity(this).build();
     }
 
     @Override
