@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.james.sharedclasses.Note;
 import com.example.james.sharedclasses.Profile;
 
 /**
@@ -19,11 +20,11 @@ public class NotesFragment extends Fragment {
         // The last two arguments ensure LayoutParams are inflated
         // properly.
         View rootView = inflater.inflate(
-                R.layout.contact_profile, container, false);
+                R.layout.contact_notes, container, false);
         Bundle args = getArguments();
-        Profile p = (Profile) args.get("notes");
+        Note n = (Note) args.get("notes");
 
-        ((TextView) rootView.findViewById(R.id.name)).setText(p.getName());
+        ((TextView) rootView.findViewById(R.id.notesTextMobile)).setText(n.getNote());
         //Integer.toString(args.getInt(ARG_OBJECT)));
         return rootView;
     }

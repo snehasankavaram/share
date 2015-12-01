@@ -93,7 +93,7 @@ public class ContactActivity extends FragmentActivity {
                     } return files;
                 case 2:
                     if (notes == null) {
-                        args.putSerializable("notes", contact.getProfile());
+                        args.putSerializable("notes", contact.getNotes());
                         notes = new NotesFragment();
                         notes.setArguments(args);
 

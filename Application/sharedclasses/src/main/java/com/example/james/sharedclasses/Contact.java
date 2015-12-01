@@ -10,15 +10,25 @@ public class Contact implements Serializable {
 
 
     private Profile profile;
-    private ArrayList<Note> notes;
+    private Note notes;
     private ArrayList <File> files;
+
+    public Contact(Profile profile, Note notes) {
+        this.profile = profile;
+        this.notes = notes;
+    }
 
     public Contact(Profile profile) {
         this.profile = profile;
+        this.notes = new Note("");
     }
 
     public Profile getProfile () {
         return this.profile;
+    }
+
+    public Note getNotes () {
+        return this.notes;
     }
 
 

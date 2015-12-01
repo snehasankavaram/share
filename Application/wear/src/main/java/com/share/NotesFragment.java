@@ -6,7 +6,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.example.james.sharedclasses.Note;
 import com.example.james.sharedclasses.Profile;
 
 
@@ -29,7 +31,15 @@ public class NotesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_notes, container, false);
+        View view  = inflater.inflate(R.layout.fragment_notes, container, false);
+        TextView notes = (TextView) view.findViewById(R.id.notesText);
+
+        Bundle args = getArguments();
+        Note n = (Note) args.get("notes");
+        if (n != null) {
+            notes.setText(n.getNote());
+        }
+        return view;
     }
 
 }

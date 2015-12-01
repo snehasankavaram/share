@@ -7,6 +7,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.example.james.sharedclasses.Contact;
+import com.example.james.sharedclasses.Note;
 import com.example.james.sharedclasses.Profile;
 
 import java.util.ArrayList;
@@ -19,6 +20,8 @@ public class ContactsAdapter extends BaseAdapter {
     //create random contacts for now, but fetch contacts from backend and add to ArrayList
     String [] names = {"Sally Smith", "Bob Jones", "Dylan Christopher Johnson", "Carry George", "Jonas Thomson"};
     String [] occupations = {"CEO", "Software Engineer", "Self employed", "Artist", "Writer"};
+    String [] notes = {"Sally Smith", "Bob Jones", "Dylan Christopher Johnson", "Carry George", "Jonas Thomson"};
+
 
     private Context ctx = null;
 
@@ -27,7 +30,8 @@ public class ContactsAdapter extends BaseAdapter {
 
         for (int i = 0; i < names.length; i++) {
             Profile p = new Profile(names[i], occupations[i]);
-            Contact c = new Contact(p);
+            Note n = new Note(notes[i]);
+            Contact c = new Contact(p, n);
             contactsList.add(c);
         }
     }
