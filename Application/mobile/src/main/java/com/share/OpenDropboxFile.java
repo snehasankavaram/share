@@ -31,7 +31,7 @@ public class OpenDropboxFile extends AsyncTask<Void, Long, Boolean>{
             return true;
         }
         catch (DropboxException e){
-
+            Log.d("dropbox exception", e.toString());
         }
         return false;
     }
@@ -39,6 +39,7 @@ public class OpenDropboxFile extends AsyncTask<Void, Long, Boolean>{
     @Override
     protected void onPostExecute(Boolean result) {
         if (result) {
+            Log.d("Loading DB file", "on new activity");
             Intent i = new Intent(context, DBFileActivity.class);
             i.putExtra("url", link.url);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
