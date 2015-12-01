@@ -1,6 +1,7 @@
 package com.share;
 
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -38,8 +39,9 @@ public class ContactsListActivity extends AppCompatActivity implements Observer{
 
         //create random contacts for now, but fetch contacts from backend and add to ArrayList
         String [] names = {"Sally Smith", "Bob Jones", "Dylan Christopher Johnson", "Carry George", "Jonas Thomson"};
-        String [] occupations = {"Sally Smith", "Bob Jones", "Dylan Christopher Johnson", "Carry George", "Jonas Thomson"};
-        String [] notes = {"Sally Smith", "Bob Jones", "Dylan Christopher Johnson", "Carry George", "Jonas Thomson"};
+        String [] occupations = {"CEO of Tech, Inc.", "Engineer at Snapchat", "Entrepreneur", "Contractor", "Project Manager"};
+        String [] notes = {"Shows potential", "I think I like this guy", "Seems legit, brief conversation at tech conference in May", "Met in startup fair, need to look at design documents", "Told him I will get back to him"};
+
         for (int i = 0; i < names.length; i++) {
             Profile p = new Profile(names[i], occupations[i]);
             Note n = new Note(notes[i]);

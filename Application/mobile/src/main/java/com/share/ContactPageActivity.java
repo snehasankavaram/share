@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
 import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.Profile;
@@ -21,7 +22,9 @@ public class ContactPageActivity extends AppCompatActivity {
         setContentView(R.layout.tab_layout);
 
 
-
+        // Handle Toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
 
         Contact c = (Contact) getIntent().getSerializableExtra("contact");

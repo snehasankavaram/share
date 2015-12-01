@@ -1,6 +1,11 @@
 package com.example.james.sharedclasses;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 
 import java.io.Serializable;
 
@@ -12,12 +17,12 @@ public class Profile implements Serializable {
     private String email;
     private String occupation;
     private String phoneNumber;
-    private Bitmap profilePicture;
 
     public Profile (String name, String occupation) {
         this.name = name;
         this.occupation = occupation;
     }
+
     public String getName() {
         return this.name;
     }
