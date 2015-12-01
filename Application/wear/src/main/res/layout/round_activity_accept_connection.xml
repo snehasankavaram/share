@@ -30,11 +30,14 @@
         android:layout_below="@+id/contact_name"
         android:layout_marginTop="5dp"
         android:layout_alignStart="@+id/imageView"
-        android:id="@+id/imageButton" />
+        android:id="@+id/acceptButton"
+        android:src="@drawable/check"/>
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/imageButton"
-        android:layout_alignEnd="@+id/imageView" />
+        android:layout_alignTop="@+id/acceptButton"
+        android:layout_alignEnd="@+id/imageView"
+        android:id="@+id/declineButton"
+        android:src="@drawable/x"/>
 </RelativeLayout>
