@@ -83,12 +83,17 @@ public class ContactsListActivity extends AppCompatActivity implements Observer{
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        Intent i;
                         switch (position) {
                             case 0:
                                 Log.d("Hamburger", "Clicked profile");
+                                i = new Intent(getApplicationContext(), MyProfileActivity.class);
+                                startActivity(i);
                                 break;
                             case 2:
                                 Log.d("Hamburger", "Clicked files");
+                                i = new Intent(getApplicationContext(), MyFilesActivity.class);
+                                startActivity(i);
                                 break;
                             case 4:
                                 Log.d("Hamburger", "Clicked contact");
