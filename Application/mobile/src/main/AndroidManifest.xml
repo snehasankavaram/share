@@ -22,6 +22,7 @@
         </activity>
         <activity
             android:name=".ContactsListActivity"
+            android:label="Contacts"
             android:theme="@style/MaterialDrawerTheme.Light.DarkToolbar.TranslucentStatus" />
         <activity
             android:name=".ContactPageActivity"
@@ -32,11 +33,11 @@
         </activity>
         <activity
             android:name=".MyProfileActivity"
-            android:label="@string/title_activity_my_profile"
+            android:label="Profile"
             android:theme="@style/MaterialDrawerTheme.Light.DarkToolbar.TranslucentStatus" />
         <activity
             android:name=".MyFilesActivity"
-            android:label="@string/title_activity_my_files"
+            android:label="Files"
             android:theme="@style/MaterialDrawerTheme.Light.DarkToolbar.TranslucentStatus"></activity>
     </application>
 

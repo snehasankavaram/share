@@ -36,7 +36,11 @@ public class ProfileFragment extends Fragment {
                 //Integer.toString(args.getInt(ARG_OBJECT)));
 
         //query for profile picture (using id) here
-        ((ImageView) rootView.findViewById(R.id.image)).setImageBitmap(getCroppedBitmap(BitmapFactory.decodeResource(getResources(), com.example.james.sharedclasses.R.drawable.face4)));
+        int [] images = {R.drawable.face1, R.drawable.face2, R.drawable.face3, R.drawable.face4};
+
+        int selected = images[p.getName().charAt(0) % 4];
+
+        ((ImageView) rootView.findViewById(R.id.image)).setImageBitmap(getCroppedBitmap(BitmapFactory.decodeResource(getResources(), selected)));
         return rootView;
     }
     public Bitmap getCroppedBitmap(Bitmap bitmap) {

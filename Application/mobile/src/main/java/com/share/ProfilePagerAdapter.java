@@ -38,9 +38,7 @@ public class ProfilePagerAdapter extends FragmentPagerAdapter {
                 } return profile;
             case 1:
                 if (files == null) {
-                    args.putSerializable("files", contact.getProfile());
                     files = new FileFragment();
-                    files.setArguments(args);
 
                 } return files;
             case 2:

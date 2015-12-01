@@ -20,21 +20,21 @@ import java.util.ArrayList;
 /**
  * Created by Sneha on 11/19/15.
  */
-public class ContactsAdapter extends ArrayAdapter<Contact>{
+public class FilesAdapter extends ArrayAdapter<File>{
     private static class ViewHolder {
         TextView name;
-        TextView occupation;
+        TextView createdAt;
         ImageView image;
     }
 
-    public ContactsAdapter(Context context, ArrayList<Contact> contacts) {
-        super(context, R.layout.contact_item, contacts);
+    public FilesAdapter(Context context, ArrayList<File> files) {
+        super(context, R.layout.contact_item, files);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // Get the data item for this position
-        Contact contact = getItem(position);
+        File file = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
         ViewHolder viewHolder; // view lookup cache stored in tag
         if (convertView == null) {
@@ -42,19 +42,20 @@ public class ContactsAdapter extends ArrayAdapter<Contact>{
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.contact_item, parent, false);
             viewHolder.name = (TextView) convertView.findViewById(R.id.name);
-            viewHolder.occupation = (TextView) convertView.findViewById(R.id.occupation);
+            viewHolder.createdAt = (TextView) convertView.findViewById(R.id.occupation);
             viewHolder.image = (ImageView) convertView.findViewById(R.id.image);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         // Populate the data into the template view using the data object
-        viewHolder.name.setText(contact.getProfile().getName());
-        viewHolder.occupation.setText(contact.getProfile().getOccupation() + "");
+        viewHolder.name.setText(file.getName());
+        viewHolder.createdAt.setText(file.getCreatedAt());
 
-        int [] images = {R.drawable.face1, R.drawable.face2, R.drawable.face3, R.drawable.face4};
-        int selected = images[contact.getProfile().getName().charAt(0) % 4];
-        viewHolder.image.setImageBitmap(getCroppedBitmap(BitmapFactory.decodeResource(parent.getResources(), selected)));
+        int [] images = {R.drawable.file_icon, R.drawable.image_icon};
+        int selected = images[file.getName().charAt(0) % 2];
+
+        viewHolder.image.setImageBitmap(BitmapFactory.decodeResource(parent.getResources(), selected));
         // Return the completed view to render on screen
         return convertView;
     }
