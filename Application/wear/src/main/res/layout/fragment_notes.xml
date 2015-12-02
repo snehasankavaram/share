@@ -2,7 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.share.NotesFragment">
+    tools:context="com.share.NotesFragment"
+    android:background="#75d1f0"
+    tools:deviceIds="wear_round">
 
 
     <TextView
@@ -14,12 +16,17 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Small Text"
-        android:id="@+id/notesText"
-        android:layout_below="@+id/textView3"
-        android:layout_toStartOf="@+id/textView3" />
+    <android.support.wearable.view.BoxInsetLayout
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_below="@+id/text"
+        android:layout_centerHorizontal="true">
+        <TextView
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Small Text"
+            android:id="@+id/notesText" />
+    </android.support.wearable.view.BoxInsetLayout>
 </RelativeLayout>

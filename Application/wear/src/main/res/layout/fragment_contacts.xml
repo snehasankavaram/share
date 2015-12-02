@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#75d1f0"
     tools:context="com.share.ContactsFragment">
 
     <android.support.wearable.view.BoxInsetLayout

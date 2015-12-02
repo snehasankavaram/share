@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.share.AcceptConnectionActivity"
-    tools:deviceIds="wear_round">
+    tools:deviceIds="wear_round"
+    android:background="@color/dark_grey">
 
     <ImageView
         android:layout_width="100dp"
@@ -20,7 +21,7 @@
         android:layout_height="wrap_content"
         android:text="Sally Smith"
         android:id="@+id/contact_name"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:layout_below="@+id/imageView"
         android:layout_centerHorizontal="true" />
 
@@ -28,7 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/contact_name"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="2dp"
         android:layout_alignStart="@+id/imageView"
         android:id="@+id/acceptButton"
         android:src="@drawable/check"/>

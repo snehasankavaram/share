@@ -11,7 +11,6 @@ public class Contact implements Serializable {
 
     private Profile profile;
     private Note notes;
-    private ArrayList <File> files;
 
     public Contact(Profile profile, Note notes) {
         this.profile = profile;

@@ -1,8 +1,11 @@
 package com.share;
 
-import android.app.Activity;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,14 +14,20 @@ import android.widget.ListView;
 
 import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.ContactsAdapter;
+import com.example.james.sharedclasses.File;
 import com.example.james.sharedclasses.Note;
 import com.example.james.sharedclasses.Profile;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-public class ContactsListActivity extends Activity implements Observer{
+public class ContactsListActivity extends AppCompatActivity implements Observer{
 
     private ContactsAdapter adapter;
 
@@ -29,10 +38,14 @@ public class ContactsListActivity extends Activity implements Observer{
 
         ArrayList <Contact> contactsList = new ArrayList<>();
 
+
         //create random contacts for now, but fetch contacts from backend and add to ArrayList
         String [] names = {"Sally Smith", "Bob Jones", "Dylan Christopher Johnson", "Carry George", "Jonas Thomson"};
-        String [] occupations = {"Sally Smith", "Bob Jones", "Dylan Christopher Johnson", "Carry George", "Jonas Thomson"};
-        String [] notes = {"Sally Smith", "Bob Jones", "Dylan Christopher Johnson", "Carry George", "Jonas Thomson"};
+        String [] occupations = {"CEO of Tech, Inc.", "Engineer at Snapchat", "Entrepreneur", "Contractor", "Project Manager"};
+        String [] notes = {"Shows potential", "I think I like this guy", "Seems legit, brief conversation at tech conference in May", "Met in startup fair, need to look at design documents", "Told him I will get back to him"};
+
+
+
         for (int i = 0; i < names.length; i++) {
             Profile p = new Profile(names[i], occupations[i]);
             Note n = new Note(notes[i]);
@@ -58,6 +71,47 @@ public class ContactsListActivity extends Activity implements Observer{
             }
         });
 
+        // Handle Toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withName("My profile");
+        PrimaryDrawerItem item2 = new PrimaryDrawerItem().withName("My files");
+        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withName("My contacts");
+
+        new DrawerBuilder()
+                .withActivity(this)
+                .addDrawerItems(
+                        item1,
+                        new DividerDrawerItem(),
+                        item2,
+                        new DividerDrawerItem(),
+                        item3
+                )
+                .withToolbar(toolbar)
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        Intent i;
+                        switch (position) {
+                            case 0:
+                                Log.d("Hamburger", "Clicked profile");
+                                i = new Intent(getApplicationContext(), MyProfileActivity.class);
+                                startActivity(i);
+                                break;
+                            case 2:
+                                Log.d("Hamburger", "Clicked files");
+                                i = new Intent(getApplicationContext(), MyFilesActivity.class);
+                                startActivity(i);
+                                break;
+                            case 4:
+                                Log.d("Hamburger", "Clicked contact");
+                                break;
+                        }
+                        return false;
+                    }
+                })
+                .build();
     }
 
     @Override

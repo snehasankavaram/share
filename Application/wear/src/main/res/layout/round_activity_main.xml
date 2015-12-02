@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.share.MainActivity"
-    tools:deviceIds="wear_round">
+    tools:deviceIds="wear_round"
+    android:background="#75d1f0">
     <com.share.MyViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
