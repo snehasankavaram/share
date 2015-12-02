@@ -1,2 +1,2 @@
-include ':mobile', ':wear', ':sharedclasses'
+include ':mobile', ':wear', ':sharedclasses', ':volley'
 include ':dropboxChooserSDK'

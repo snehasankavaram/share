@@ -26,5 +26,6 @@ dependencies {
     compile 'com.android.support:design:23.1.1'
     compile project(':dropboxChooserSDK')
     compile project(':sharedclasses')
+    compile project(":volley")
     compile 'com.android.support:appcompat-v7:23.1.1'
 }

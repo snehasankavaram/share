@@ -10,12 +10,55 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.CapabilityApi;
+import com.google.android.gms.wearable.CapabilityInfo;
+import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.NodeApi;
+import com.google.android.gms.wearable.Wearable;
+
+import java.util.Set;
+
 public class ColorPickerActivity extends Activity {
     ImageView[] imageViews = new ImageView[4];
+
+    String mNode; // the connected device to send the message to
+    GoogleApiClient mGoogleApiClient;
+    public static String TAG = "ColorPicker";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_color_picker);
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Wearable.API)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(Bundle connectionHint) {
+                        CapabilityApi.CapabilityListener capabilityListener =
+                                new CapabilityApi.CapabilityListener() {
+                                    @Override
+                                    public void onCapabilityChanged(CapabilityInfo capabilityInfo) {
+                                        updateTranscriptionCapability(capabilityInfo);
+                                    }
+                                };
+
+                        Wearable.CapabilityApi.addCapabilityListener(
+                                mGoogleApiClient,
+                                capabilityListener,
+                                "message_passer");
+                    }
+
+                    @Override
+                    public void onConnectionSuspended(int cause) {
+                        /* Connection was interrupted */
+                    }
+                })
+                .build();
+
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
             @Override
@@ -49,11 +92,58 @@ public class ColorPickerActivity extends Activity {
         });
     }
 
+    private void updateTranscriptionCapability(CapabilityInfo capabilityInfo) {
+        Set<Node> connectedNodes = capabilityInfo.getNodes();
+
+        mNode = pickBestNodeId(connectedNodes);
+    }
+
+    private String pickBestNodeId(Set<Node> nodes) {
+        String bestNodeId = null;
+        // Find a nearby node or pick one arbitrarily
+        for (Node node : nodes) {
+            if (node.isNearby()) {
+                return node.getId();
+            }
+            bestNodeId = node.getId();
+        }
+        return bestNodeId;
+    }
+
+    private void sendMessage(final String path, String message) {
+
+        new Thread( new Runnable() {
+            @Override
+            public void run() {
+                NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.getConnectedNodes(mGoogleApiClient).await();
+                for (Node node : nodes.getNodes()) {
+                    Log.d(TAG, node.getId());
+                    Wearable.MessageApi.sendMessage(
+                            mGoogleApiClient, node.getId(), path, null).setResultCallback(
+
+                            new ResultCallback<MessageApi.SendMessageResult>() {
+                                @Override
+                                public void onResult(MessageApi.SendMessageResult sendMessageResult) {
+
+                                    if (!sendMessageResult.getStatus().isSuccess()) {
+                                        Log.e(TAG, "Failed to send message with status code: "
+                                                + sendMessageResult.getStatus().getStatusCode());
+                                    }
+                                }
+                            }
+                    );
+//        }
+                }
+            }
+        }).start();
+    }
+
 //    Will send a server POST request of (color, timestamp, location) -> user_id
     private void sendColorToPhone(ImageView v) {
         ColorDrawable drawable = (ColorDrawable) v.getBackground();
         String c = String.format("#%06X", (0xFFFFFF & drawable.getColor()));
         Log.d("Color", c);
-
+        mGoogleApiClient.connect();
+        sendMessage("/Color", c);
     }
 }
