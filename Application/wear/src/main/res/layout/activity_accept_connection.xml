@@ -8,4 +8,5 @@
     app:rectLayout="@layout/rect_activity_accept_connection"
     app:roundLayout="@layout/round_activity_accept_connection"
     tools:context="com.share.AcceptConnectionActivity"
+    android:background="#75d1f0"
     tools:deviceIds="wear"></android.support.wearable.view.WatchViewStub>

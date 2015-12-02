@@ -2,7 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.share.FileFragment">
+    tools:context="com.share.FileFragment"
+    android:background="#75d1f0">
 
     <!-- TODO: Update blank fragment layout -->
 
