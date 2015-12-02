@@ -47,7 +47,7 @@ public class ProfileFragment extends Fragment {
         Profile p = (Profile) args.get("profile");
         if (p != null) {
             name.setText(p.getName());
-            phone.setText("925-351-1211");
+            phone.setText("(925)-351-1211");
             occupation.setText(p.getOccupation());
         }
 
