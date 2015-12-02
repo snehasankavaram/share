@@ -1,5 +1,6 @@
 package com.share;
 
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,6 +13,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.james.sharedclasses.Contact;
+import com.example.james.sharedclasses.Profile;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -136,7 +139,7 @@ public class MobileMessageService extends WearableListenerService implements Goo
                                         public void onResponse(String response) {
                                             Log.d("sending string", "request 3");
                                             StringRequest stringRequest3 = new StringRequest(Request.Method.POST, urlbase + "connection/create"
-                                                    + "?username=snehasankavaram1&latitude=65.9667&longitude=-18.5333&color=" + color,
+                                                    + "?username=dylan&latitude=65.9667&longitude=-18.5333&color=" + color,
                                                     new Response.Listener<String>() {
                                                         @Override
                                                         public void onResponse(String response) {
@@ -148,6 +151,27 @@ public class MobileMessageService extends WearableListenerService implements Goo
                                                                 @Override
                                                                 public void onResponse(String response) {
                                                                     Log.d("Connection show", response);
+                                                                    try {
+                                                                        JSONObject jsonObject = new JSONObject(response);
+                                                                        JSONArray contacts = jsonObject.getJSONArray("connection");
+                                                                        for (int i = 0; i < contacts.length(); i++) {
+                                                                            JSONObject contact = contacts.getJSONObject(i);
+                                                                            Log.d("contact", contact.getString("username"));
+                                                                            if (contact.getString("username").equals("dylan")) {
+                                                                                String name = contact.getString("name");
+                                                                                String occupation = contact.getString("occupation");
+                                                                                Contact c = new Contact(new Profile(name, occupation));
+                                                                                Intent intent = new Intent(getApplicationContext(), ContactPageActivity.class);
+                                                                                intent.putExtra("contact", c);
+                                                                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                                                startActivity(intent);
+                                                                                break;
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    catch (JSONException e) {
+                                                                        e.printStackTrace();
+                                                                    }
                                                                 }
                                                             }, new Response.ErrorListener() {
 

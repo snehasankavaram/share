@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -16,7 +15,6 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.wearable.view.WatchViewStub;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 
 import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.Profile;
@@ -39,7 +37,7 @@ public class AcceptConnectionActivity extends Activity {
                     @Override
                     public void onClick(View v) {
                         createNotification();
-                        Contact c = new Contact(new Profile("Sally Smith", "CEO"));
+                        Contact c = new Contact(new Profile("Brenda Jones", "CEO"));
                         Intent i = new Intent(getApplicationContext(), ContactActivity.class);
                         i.putExtra("contact", c);
                         startActivity(i);
@@ -62,7 +60,7 @@ public class AcceptConnectionActivity extends Activity {
     }
 
     private void createNotification() {
-        Contact c = new Contact(new Profile("Sarah Jones", "CEO"));
+        Contact c = new Contact(new Profile("Brenda Jones", "CEO"));
         Intent intent = new Intent(getBaseContext(), ContactActivity.class);
         intent.putExtra("contact", c);
         PendingIntent openContacts = PendingIntent.getActivity(getBaseContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -76,7 +74,7 @@ public class AcceptConnectionActivity extends Activity {
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(getBaseContext())
                         .setSmallIcon(R.drawable.logo)
-                        .setContentText("New connection from Sarah Jones")
+                        .setContentText("New connection from Brenda Jones")
                         .setContentIntent(viewPendingIntent)
                         .addAction(R.drawable.face4,
                                 "Accept contact", openContacts);

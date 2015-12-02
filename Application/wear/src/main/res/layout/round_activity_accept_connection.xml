@@ -10,7 +10,7 @@
     <ImageView
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:src="@drawable/face4"
+        android:src="@drawable/face3"
         android:layout_marginTop="24dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
@@ -19,7 +19,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sally Smith"
+        android:text="Brenda Jones"
         android:id="@+id/contact_name"
         android:layout_marginTop="10dp"
         android:layout_below="@+id/imageView"
