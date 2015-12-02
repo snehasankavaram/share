@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -70,6 +71,8 @@ public class ContactsAdapter extends BaseAdapter {
         layout.addView(imgView);
         TextView textView = new TextView(this.ctx);
         textView.setText(contactsList.get(arg0).getProfile().getName());
+        textView.setTextSize(10);
+        textView.setGravity(Gravity.CENTER);
         layout.addView(textView);
 
         return layout;
