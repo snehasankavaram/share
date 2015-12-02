@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.Note;
@@ -25,9 +27,9 @@ import java.util.ArrayList;
 public class ContactsAdapter extends BaseAdapter {
     ArrayList<Contact> contactsList = new ArrayList<>();
     //create random contacts for now, but fetch contacts from backend and add to ArrayList
-    String [] names = {"Sally Smith", "Bob Jones", "Dylan Christopher Johnson", "Carry George", "Jonas Thomson"};
-    String [] occupations = {"CEO", "Software Engineer", "Self employed", "Artist", "Writer"};
-    String [] notes = {"Sally Smith", "Bob Jones", "Dylan Christopher Johnson", "Carry George", "Jonas Thomson"};
+    String [] names = {"Sally Smith", "Bob Jones", "Dylan Lee", "Carry George", "Jonas Thomson"};
+    String [] occupations = {"CEO of Tech, Inc.", "Engineer at Snapchat", "Entrepreneur", "Contractor", "Project Manager"};
+    String [] notes = {"Shows potential", "I think I like this guy", "Seems legit, brief conversation at tech conference in May", "Met in startup fair, need to look at design documents", "Told him I will get back to him"};
 
 
     private Context ctx = null;
@@ -50,6 +52,8 @@ public class ContactsAdapter extends BaseAdapter {
 
     @Override
     public View getView(int arg0, View arg1, ViewGroup arg2) {
+        LinearLayout layout = new LinearLayout(this.ctx);
+        layout.setOrientation(LinearLayout.VERTICAL);
         ImageView imgView = new ImageView(this.ctx);
         imgView.setScaleType(ImageView.ScaleType.FIT_END);
         imgView.setPadding(8, 8, 8, 8);
@@ -63,7 +67,12 @@ public class ContactsAdapter extends BaseAdapter {
         imgView.setMaxHeight(100);
         imgView.setMaxWidth(100);
 
-        return imgView;
+        layout.addView(imgView);
+        TextView textView = new TextView(this.ctx);
+        textView.setText(contactsList.get(arg0).getProfile().getName());
+        layout.addView(textView);
+
+        return layout;
     }
 
     @Override
