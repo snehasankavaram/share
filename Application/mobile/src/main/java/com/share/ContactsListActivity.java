@@ -1,7 +1,6 @@
 package com.share;
 
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -14,7 +13,6 @@ import android.widget.ListView;
 
 import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.ContactsAdapter;
-import com.example.james.sharedclasses.File;
 import com.example.james.sharedclasses.Note;
 import com.example.james.sharedclasses.Profile;
 import com.mikepenz.materialdrawer.Drawer;
@@ -40,7 +38,7 @@ public class ContactsListActivity extends AppCompatActivity implements Observer{
 
 
         //create random contacts for now, but fetch contacts from backend and add to ArrayList
-        String [] names = {"Sally Smith", "Bob Jones", "Dylan Christopher Johnson", "Carry George", "Jonas Thomson"};
+        String [] names = {"Sally Smith", "Bob Jones", "Dylan Christopher Lee", "Carry George", "Jonas Thomson"};
         String [] occupations = {"CEO of Tech, Inc.", "Engineer at Snapchat", "Entrepreneur", "Contractor", "Project Manager"};
         String [] notes = {"Shows potential", "I think I like this guy", "Seems legit, brief conversation at tech conference in May", "Met in startup fair, need to look at design documents", "Told him I will get back to him"};
 
