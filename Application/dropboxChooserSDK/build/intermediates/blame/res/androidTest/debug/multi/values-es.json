@@ -1,6 +1,6 @@
 [
     {
-        "outputFile": "/Users/james/Documents/share/Application/dropboxChooserSDK/build/intermediates/res/merged/androidTest/debug/values-es/values-es.xml",
+        "outputFile": "C:\\Users\\james\\Documents\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\res\\merged\\androidTest\\debug\\values-es\\values-es.xml",
         "map": [
             {
                 "to": {
@@ -11,7 +11,7 @@
                     "endOffset": 107
                 },
                 "from": {
-                    "file": "/Users/james/Documents/share/Application/dropboxChooserSDK/build/intermediates/bundles/debug/res/values-es/values-es.xml",
+                    "file": "C:\\Users\\james\\Documents\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\values-es\\values-es.xml",
                     "position": {
                         "startLine": 2,
                         "startColumn": 4,
@@ -30,7 +30,7 @@
                     "endOffset": 170
                 },
                 "from": {
-                    "file": "/Users/james/Documents/share/Application/dropboxChooserSDK/build/intermediates/bundles/debug/res/values-es/values-es.xml",
+                    "file": "C:\\Users\\james\\Documents\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\values-es\\values-es.xml",
                     "position": {
                         "startLine": 3,
                         "startColumn": 4,
@@ -49,7 +49,7 @@
                     "endOffset": 229
                 },
                 "from": {
-                    "file": "/Users/james/Documents/share/Application/dropboxChooserSDK/build/intermediates/bundles/debug/res/values-es/values-es.xml",
+                    "file": "C:\\Users\\james\\Documents\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\values-es\\values-es.xml",
                     "position": {
                         "startLine": 4,
                         "startColumn": 4,
@@ -68,7 +68,7 @@
                     "endOffset": 307
                 },
                 "from": {
-                    "file": "/Users/james/Documents/share/Application/dropboxChooserSDK/build/intermediates/bundles/debug/res/values-es/values-es.xml",
+                    "file": "C:\\Users\\james\\Documents\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\values-es\\values-es.xml",
                     "position": {
                         "startLine": 5,
                         "startColumn": 4,
@@ -87,7 +87,7 @@
                     "endOffset": 461
                 },
                 "from": {
-                    "file": "/Users/james/Documents/share/Application/dropboxChooserSDK/build/intermediates/bundles/debug/res/values-es/values-es.xml",
+                    "file": "C:\\Users\\james\\Documents\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\values-es\\values-es.xml",
                     "position": {
                         "startLine": 6,
                         "startColumn": 4,
@@ -106,7 +106,7 @@
                     "endOffset": 519
                 },
                 "from": {
-                    "file": "/Users/james/Documents/share/Application/dropboxChooserSDK/build/intermediates/bundles/debug/res/values-es/values-es.xml",
+                    "file": "C:\\Users\\james\\Documents\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\values-es\\values-es.xml",
                     "position": {
                         "startLine": 7,
                         "startColumn": 4,
@@ -125,7 +125,7 @@
                     "endOffset": 579
                 },
                 "from": {
-                    "file": "/Users/james/Documents/share/Application/dropboxChooserSDK/build/intermediates/bundles/debug/res/values-es/values-es.xml",
+                    "file": "C:\\Users\\james\\Documents\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\values-es\\values-es.xml",
                     "position": {
                         "startLine": 8,
                         "startColumn": 4,
@@ -144,7 +144,7 @@
                     "endOffset": 658
                 },
                 "from": {
-                    "file": "/Users/james/Documents/share/Application/dropboxChooserSDK/build/intermediates/bundles/debug/res/values-es/values-es.xml",
+                    "file": "C:\\Users\\james\\Documents\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\values-es\\values-es.xml",
                     "position": {
                         "startLine": 9,
                         "startColumn": 4,
@@ -163,7 +163,183 @@
                     "endOffset": 815
                 },
                 "from": {
-                    "file": "/Users/james/Documents/share/Application/dropboxChooserSDK/build/intermediates/bundles/debug/res/values-es/values-es.xml",
+                    "file": "C:\\Users\\james\\Documents\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\values-es\\values-es.xml",
+                    "position": {
+                        "startLine": 10,
+                        "startColumn": 4,
+                        "startOffset": 663,
+                        "endColumn": 156,
+                        "endOffset": 815
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "outputFile": "C:\\Users\\Andrea\\AndroidStudioProjects\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\res\\merged\\androidTest\\debug\\values-es\\values-es.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 55,
+                    "endColumn": 56,
+                    "endOffset": 107
+                },
+                "from": {
+                    "file": "C:\\Users\\Andrea\\AndroidStudioProjects\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\values-es\\values-es.xml",
+                    "position": {
+                        "startLine": 2,
+                        "startColumn": 4,
+                        "startOffset": 55,
+                        "endColumn": 56,
+                        "endOffset": 107
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 3,
+                    "startColumn": 4,
+                    "startOffset": 112,
+                    "endColumn": 62,
+                    "endOffset": 170
+                },
+                "from": {
+                    "file": "C:\\Users\\Andrea\\AndroidStudioProjects\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\values-es\\values-es.xml",
+                    "position": {
+                        "startLine": 3,
+                        "startColumn": 4,
+                        "startOffset": 112,
+                        "endColumn": 62,
+                        "endOffset": 170
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 4,
+                    "startColumn": 4,
+                    "startOffset": 175,
+                    "endColumn": 58,
+                    "endOffset": 229
+                },
+                "from": {
+                    "file": "C:\\Users\\Andrea\\AndroidStudioProjects\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\values-es\\values-es.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 175,
+                        "endColumn": 58,
+                        "endOffset": 229
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 5,
+                    "startColumn": 4,
+                    "startOffset": 234,
+                    "endColumn": 77,
+                    "endOffset": 307
+                },
+                "from": {
+                    "file": "C:\\Users\\Andrea\\AndroidStudioProjects\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\values-es\\values-es.xml",
+                    "position": {
+                        "startLine": 5,
+                        "startColumn": 4,
+                        "startOffset": 234,
+                        "endColumn": 77,
+                        "endOffset": 307
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 6,
+                    "startColumn": 4,
+                    "startOffset": 312,
+                    "endColumn": 153,
+                    "endOffset": 461
+                },
+                "from": {
+                    "file": "C:\\Users\\Andrea\\AndroidStudioProjects\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\values-es\\values-es.xml",
+                    "position": {
+                        "startLine": 6,
+                        "startColumn": 4,
+                        "startOffset": 312,
+                        "endColumn": 153,
+                        "endOffset": 461
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 7,
+                    "startColumn": 4,
+                    "startOffset": 466,
+                    "endColumn": 57,
+                    "endOffset": 519
+                },
+                "from": {
+                    "file": "C:\\Users\\Andrea\\AndroidStudioProjects\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\values-es\\values-es.xml",
+                    "position": {
+                        "startLine": 7,
+                        "startColumn": 4,
+                        "startOffset": 466,
+                        "endColumn": 57,
+                        "endOffset": 519
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 8,
+                    "startColumn": 4,
+                    "startOffset": 524,
+                    "endColumn": 59,
+                    "endOffset": 579
+                },
+                "from": {
+                    "file": "C:\\Users\\Andrea\\AndroidStudioProjects\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\values-es\\values-es.xml",
+                    "position": {
+                        "startLine": 8,
+                        "startColumn": 4,
+                        "startOffset": 524,
+                        "endColumn": 59,
+                        "endOffset": 579
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 9,
+                    "startColumn": 4,
+                    "startOffset": 584,
+                    "endColumn": 78,
+                    "endOffset": 658
+                },
+                "from": {
+                    "file": "C:\\Users\\Andrea\\AndroidStudioProjects\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\values-es\\values-es.xml",
+                    "position": {
+                        "startLine": 9,
+                        "startColumn": 4,
+                        "startOffset": 584,
+                        "endColumn": 78,
+                        "endOffset": 658
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 10,
+                    "startColumn": 4,
+                    "startOffset": 663,
+                    "endColumn": 156,
+                    "endOffset": 815
+                },
+                "from": {
+                    "file": "C:\\Users\\Andrea\\AndroidStudioProjects\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\values-es\\values-es.xml",
                     "position": {
                         "startLine": 10,
                         "startColumn": 4,

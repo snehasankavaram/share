@@ -1,14 +1,26 @@
 [
     {
-        "merged": "/Users/james/Documents/share/Application/dropboxChooserSDK/build/intermediates/res/merged/androidTest/debug/drawable/common_bar_light_gray_bottom.xml",
-        "source": "/Users/james/Documents/share/Application/dropboxChooserSDK/build/intermediates/bundles/debug/res/drawable/common_bar_light_gray_bottom.xml"
+        "merged": "C:\\Users\\Andrea\\AndroidStudioProjects\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable\\common_button_green.xml",
+        "source": "C:\\Users\\Andrea\\AndroidStudioProjects\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\drawable\\common_button_green.xml"
     },
     {
-        "merged": "/Users/james/Documents/share/Application/dropboxChooserSDK/build/intermediates/res/merged/androidTest/debug/drawable/common_button_light_gray.xml",
-        "source": "/Users/james/Documents/share/Application/dropboxChooserSDK/build/intermediates/bundles/debug/res/drawable/common_button_light_gray.xml"
+        "merged": "C:\\Users\\james\\Documents\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable\\common_button_light_gray.xml",
+        "source": "C:\\Users\\james\\Documents\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\drawable\\common_button_light_gray.xml"
     },
     {
-        "merged": "/Users/james/Documents/share/Application/dropboxChooserSDK/build/intermediates/res/merged/androidTest/debug/drawable/common_button_green.xml",
-        "source": "/Users/james/Documents/share/Application/dropboxChooserSDK/build/intermediates/bundles/debug/res/drawable/common_button_green.xml"
+        "merged": "C:\\Users\\Andrea\\AndroidStudioProjects\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable\\common_button_light_gray.xml",
+        "source": "C:\\Users\\Andrea\\AndroidStudioProjects\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\drawable\\common_button_light_gray.xml"
+    },
+    {
+        "merged": "C:\\Users\\james\\Documents\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable\\common_button_green.xml",
+        "source": "C:\\Users\\james\\Documents\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\drawable\\common_button_green.xml"
+    },
+    {
+        "merged": "C:\\Users\\Andrea\\AndroidStudioProjects\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable\\common_bar_light_gray_bottom.xml",
+        "source": "C:\\Users\\Andrea\\AndroidStudioProjects\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\drawable\\common_bar_light_gray_bottom.xml"
+    },
+    {
+        "merged": "C:\\Users\\james\\Documents\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable\\common_bar_light_gray_bottom.xml",
+        "source": "C:\\Users\\james\\Documents\\share\\Application\\dropboxChooserSDK\\build\\intermediates\\bundles\\debug\\res\\drawable\\common_bar_light_gray_bottom.xml"
     }
 ]
