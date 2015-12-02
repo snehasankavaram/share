@@ -34,6 +34,10 @@ public class ContactsListActivity extends AppCompatActivity implements Observer{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
 
+        Intent intent = new Intent(getApplicationContext(), MobileMessageService.class);
+        intent.putExtra("SomeData", "ItValue");
+        startService(intent);
+
         ArrayList <Contact> contactsList = new ArrayList<>();
 
 
