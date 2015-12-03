@@ -37,7 +37,7 @@ public class AcceptConnectionActivity extends Activity {
                     @Override
                     public void onClick(View v) {
                         createNotification();
-                        Contact c = new Contact(new Profile("Brenda Jones", "CEO"));
+                        Contact c = new Contact(new Profile("Brenda Jones", "Brenda@gmail.com", "326-112-2244","CEO"));
                         Intent i = new Intent(getApplicationContext(), ContactActivity.class);
                         i.putExtra("contact", c);
                         startActivity(i);
@@ -60,7 +60,7 @@ public class AcceptConnectionActivity extends Activity {
     }
 
     private void createNotification() {
-        Contact c = new Contact(new Profile("Brenda Jones", "CEO"));
+        Contact c = new Contact(new Profile("Brenda Jones", "Brenda@gmail.com", "326-112-2244","CEO"));
         Intent intent = new Intent(getBaseContext(), ContactActivity.class);
         intent.putExtra("contact", c);
         PendingIntent openContacts = PendingIntent.getActivity(getBaseContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);

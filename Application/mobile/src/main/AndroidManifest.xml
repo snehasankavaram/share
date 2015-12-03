@@ -33,14 +33,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <service
             android:name=".MobileMessageService"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
             </intent-filter>
         </service>
+
         <activity
             android:name=".MyProfileActivity"
             android:label="Profile"
@@ -48,13 +50,11 @@
         <activity
             android:name=".MyFilesActivity"
             android:label="Files"
-            android:theme="@style/MaterialDrawerTheme.Light.DarkToolbar.TranslucentStatus"></activity>
-
+            android:theme="@style/MaterialDrawerTheme.Light.DarkToolbar.TranslucentStatus" />
         <activity
             android:name=".DBFileActivity"
             android:label="@string/title_activity_dbfile"
-            android:theme="@style/MaterialDrawerTheme.Light.DarkToolbar.TranslucentStatus"></activity>
-
+            android:theme="@style/MaterialDrawerTheme.Light.DarkToolbar.TranslucentStatus" />
         <activity
             android:name="com.dropbox.client2.android.AuthActivity"
             android:configChanges="orientation|keyboard"
@@ -70,6 +70,10 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".SignupActivity"
+            android:label="@string/title_activity_signup"
+            android:theme="@style/Theme.AppCompat.Light"></activity>
     </application>
 
 </manifest>

@@ -49,7 +49,7 @@ public class ContactsListActivity extends AppCompatActivity implements Observer{
 
 
         for (int i = 0; i < names.length; i++) {
-            Profile p = new Profile(names[i], occupations[i]);
+            Profile p = new Profile(names[i], "email", "phone", occupations[i]);
             Note n = new Note(notes[i]);
             Contact c = new Contact(p, n);
             contactsList.add(c);

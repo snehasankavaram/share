@@ -27,6 +27,8 @@ dependencies {
     compile project(':sharedclasses')
     compile project(':volley')
     compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.jakewharton:butterknife:6.1.0'
+    compile 'com.squareup.okhttp:logging-interceptor:2.6.0'
     compile('com.mikepenz:materialdrawer:4.5.3') {
         transitive = true
     }

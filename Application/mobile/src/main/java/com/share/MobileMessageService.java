@@ -14,6 +14,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.james.sharedclasses.Contact;
+import com.example.james.sharedclasses.Note;
 import com.example.james.sharedclasses.Profile;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -160,7 +161,9 @@ public class MobileMessageService extends WearableListenerService implements Goo
                                                                             if (contact.getString("username").equals("dylan")) {
                                                                                 String name = contact.getString("name");
                                                                                 String occupation = contact.getString("occupation");
-                                                                                Contact c = new Contact(new Profile(name, occupation));
+                                                                                Profile p = new Profile(name, "email", "phone", occupation);
+                                                                                Note n = new Note("");
+                                                                                Contact c = new Contact(p, n);
                                                                                 Intent intent = new Intent(getApplicationContext(), ContactPageActivity.class);
                                                                                 intent.putExtra("contact", c);
                                                                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

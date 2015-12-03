@@ -83,7 +83,7 @@ public class MainActivity extends FragmentActivity {
         }
 
         private Profile getSelf() {
-            Profile p = new Profile("Christopher Scott", "Student at UC Berkeley");
+            Profile p = new Profile("Christopher Scott", "Christopher@gmail.com", "234-516-3322","Student at UC Berkeley");
             return p;
         }
     }

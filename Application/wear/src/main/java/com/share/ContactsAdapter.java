@@ -39,7 +39,7 @@ public class ContactsAdapter extends BaseAdapter {
         this.ctx = context;
 
         for (int i = 0; i < names.length; i++) {
-            Profile p = new Profile(names[i], occupations[i]);
+            Profile p = new Profile(names[i], names[i]+"@gmail.com","136-234-1111", occupations[i]);
             Note n = new Note(notes[i]);
             Contact c = new Contact(p, n);
             contactsList.add(c);

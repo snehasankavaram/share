@@ -9,21 +9,21 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.james.sharedclasses.Note;
-import com.example.james.sharedclasses.Profile;
+import com.example.james.sharedclasses.User;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class NotesFragment extends Fragment {
-    Profile p;
+    User p;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             Bundle args = getArguments();
-            p = (Profile) args.get("files");
+            p = (User) args.get("files");
         }
     }
 
