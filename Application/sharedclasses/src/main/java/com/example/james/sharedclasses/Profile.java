@@ -1,5 +1,6 @@
 package com.example.james.sharedclasses;
 
+import com.google.android.gms.wearable.DataMap;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -37,6 +38,17 @@ public class Profile implements Serializable {
         this.occupation = occupation;
     }
 
+    public Profile(DataMap map) {
+        this(map.getString("name"), map.getString("email"), map.getString("phone"), map.getString("occupation"));
+    }
+
+    public DataMap putToDataMap(DataMap map) {
+        map.putString("name", this.name);
+        map.putString("email", this.email);
+        map.putString("phone", this.phone);
+        map.putString("occupation", this.occupation);
+        return map;
+    }
     /**
      *
      * @return

@@ -13,8 +13,18 @@ import android.widget.ListView;
 
 import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.ContactsAdapter;
-import com.example.james.sharedclasses.Note;
 import com.example.james.sharedclasses.Profile;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.NodeApi;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.PutDataRequest;
+import com.google.android.gms.wearable.Wearable;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -25,9 +35,13 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-public class ContactsListActivity extends AppCompatActivity implements Observer{
+public class ContactsListActivity extends AppCompatActivity implements Observer {
 
     private ContactsAdapter adapter;
+    private GoogleApiClient mGoogleApiClient;
+    private static final String CONTACTS_KEY = "com.example.key.contacts";
+    private static final String TAG = "ContactsListActivity";
+    private Profile myProfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,32 +49,15 @@ public class ContactsListActivity extends AppCompatActivity implements Observer{
         setContentView(R.layout.activity_contacts);
 
         Intent intent = new Intent(getApplicationContext(), MobileMessageService.class);
-        intent.putExtra("SomeData", "ItValue");
         startService(intent);
 
-        ArrayList <Contact> contactsList = new ArrayList<>();
+        myProfile = (Profile) getIntent().getSerializableExtra("profile");
 
-
-        //create random contacts for now, but fetch contacts from backend and add to ArrayList
-        String [] names = {"Sally Smith", "Bob Jones", "Dylan Christopher Lee", "Carry George", "Jonas Thomson"};
-        String [] occupations = {"CEO of Tech, Inc.", "Engineer at Snapchat", "Entrepreneur", "Contractor", "Project Manager"};
-        String [] notes = {"Shows potential", "I think I like this guy", "Seems legit, brief conversation at tech conference in May", "Met in startup fair, need to look at design documents", "Told him I will get back to him"};
-
-
-
-        for (int i = 0; i < names.length; i++) {
-            Profile p = new Profile(names[i], "email", "phone", occupations[i]);
-            Note n = new Note(notes[i]);
-            Contact c = new Contact(p, n);
-            contactsList.add(c);
-        }
-
-
+        ArrayList <Contact> contactsList = getContacts();
         adapter = new ContactsAdapter(this, contactsList);
 
         ListView listView = (ListView) findViewById(R.id.list);
         listView.setAdapter(adapter);
-//        EarthquakeInfoSingleton.getInstance().addObserver(this);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -73,7 +70,46 @@ public class ContactsListActivity extends AppCompatActivity implements Observer{
             }
         });
 
-        // Handle Toolbar
+        createToolbar();
+
+        mGoogleApiClient = new GoogleApiClient.Builder( this )
+                .addApi(Wearable.API)
+                .build();
+        mGoogleApiClient.connect();
+
+//        sendContactsToWear(contactsList);
+//        sendMessage("/asdf", );
+
+    }
+
+    private void sendMessage( final String path, final String text ) {
+        new Thread( new Runnable() {
+            @Override
+            public void run() {
+                mGoogleApiClient.connect();
+                NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.getConnectedNodes( mGoogleApiClient ).await();
+                for(Node node : nodes.getNodes()) {
+                    MessageApi.SendMessageResult result = Wearable.MessageApi.sendMessage(
+                            mGoogleApiClient, node.getId(), path, text.getBytes() ).await();
+                }
+            }
+        }).start();
+    }
+
+    public ArrayList<Contact>  getContacts() {
+        ArrayList<Contact> contactsList = new ArrayList<>();
+        String [] names = {"Sally Smith", "Bob Jones", "Dylan Lee", "Carry George", "Jonas Thomson"};
+        String [] occupations = {"CEO of Tech, Inc.", "Engineer at Snapchat", "Entrepreneur", "Contractor", "Project Manager"};
+        String [] notes = {"Shows potential.", "I think I like this guy", "Seems legit, brief conversation at tech conference in May", "Met in startup fair, need to look at design documents", "Told him I will get back to him"};
+        for (int i = 0; i < names.length; i++) {
+            Profile p = new Profile(names[i], names[i]+"@gmail.com","136-234-1111", occupations[i]);
+            Contact c = new Contact(p, notes[i]);
+            contactsList.add(c);
+        }
+        return contactsList;
+    }
+
+    public void createToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -99,6 +135,7 @@ public class ContactsListActivity extends AppCompatActivity implements Observer{
                             case 0:
                                 Log.d("Hamburger", "Clicked profile");
                                 i = new Intent(getApplicationContext(), MyProfileActivity.class);
+                                i.putExtra("profile", myProfile);
                                 startActivity(i);
                                 break;
                             case 2:
@@ -142,5 +179,25 @@ public class ContactsListActivity extends AppCompatActivity implements Observer{
     public void update(Observable observable, Object data) {
         ListView listView = (ListView) findViewById(R.id.list);
         ((ContactsAdapter) listView.getAdapter()).notifyDataSetChanged();
+    }
+
+    private void sendContactsToWear(ArrayList<Contact> contacts) {
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/contacts");
+        ArrayList<DataMap> contactsAsDataMaps = new ArrayList<>();
+        for (Contact c : contacts) {
+            contactsAsDataMaps.add(c.putToDataMap(new DataMap()));
+        }
+        putDataMapReq.getDataMap().putDataMapArrayList(CONTACTS_KEY, contactsAsDataMaps);
+        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+        PendingResult<DataApi.DataItemResult> pendingResult =
+                Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
+        pendingResult.setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
+            @Override
+            public void onResult(final DataApi.DataItemResult result) {
+                if(result.getStatus().isSuccess()) {
+                    Log.d(TAG, "Data item set: " + result.getDataItem().getUri());
+                }
+            }
+        });
     }
 }

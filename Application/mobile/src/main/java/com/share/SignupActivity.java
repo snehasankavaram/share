@@ -2,7 +2,6 @@ package com.share;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +11,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.james.sharedclasses.GetUserRequestWrapper;
+import com.example.james.sharedclasses.Profile;
 import com.example.james.sharedclasses.ServerEndpoint;
 import com.example.james.sharedclasses.User;
 
@@ -169,7 +170,7 @@ public class SignupActivity extends Activity {
                     .build();
 
             ServerEndpoint service = retrofit.create(ServerEndpoint.class);
-            Call<User> call = service.createUser(new User(mName, mName, mPassword, mEmail, "123-456-7890", "Engineer"));
+            Call<GetUserRequestWrapper> call = service.createUser(new GetUserRequestWrapper(new User(mName, mPassword), new Profile("Testname", mEmail, "testPhone", "testOccupation")));
             try {
                 Response response = call.execute();
                 com.squareup.okhttp.Response raw = response.raw();
@@ -186,10 +187,10 @@ public class SignupActivity extends Activity {
             progressDialog.dismiss();
 
             if (success) {
-                Intent i = new Intent(getBaseContext(), ContactsListActivity.class);
-                startActivity(i);
-            } else {
-                Toast.makeText(getBaseContext(), "Registration failed. Please try again later.", Toast.LENGTH_LONG).show();
+               onSignupSuccess();
+            }
+            else {
+                onSignupFailed();
             }
         }
 

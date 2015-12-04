@@ -14,7 +14,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.james.sharedclasses.Contact;
-import com.example.james.sharedclasses.Note;
 import com.example.james.sharedclasses.Profile;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -72,10 +71,7 @@ public class MobileMessageService extends WearableListenerService implements Goo
         if( messageEvent.getPath().equalsIgnoreCase( COLOR ) ) {
             this.color = new String(messageEvent.getData(), StandardCharsets.UTF_8);
             Log.d("got message", this.color);
-            this.connect2Server();
-            if (mLatitude != null && mLongitude != null) {
-//                this.connect2Server();
-            }
+//            this.connect2Server();
         }
 
     }
@@ -124,7 +120,7 @@ public class MobileMessageService extends WearableListenerService implements Goo
         }
     }
 
-    private void connect2Server () { //STILL WORKING ON THIS METHOD
+    private void connect2Server () {
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, urlbase + "users/show" + "?username=sarahs",
                 new Response.Listener<String>() {
@@ -162,8 +158,7 @@ public class MobileMessageService extends WearableListenerService implements Goo
                                                                                 String name = contact.getString("name");
                                                                                 String occupation = contact.getString("occupation");
                                                                                 Profile p = new Profile(name, "email", "phone", occupation);
-                                                                                Note n = new Note("");
-                                                                                Contact c = new Contact(p, n);
+                                                                                Contact c = new Contact(p, "");
                                                                                 Intent intent = new Intent(getApplicationContext(), ContactPageActivity.class);
                                                                                 intent.putExtra("contact", c);
                                                                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

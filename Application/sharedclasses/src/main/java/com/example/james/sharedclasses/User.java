@@ -3,9 +3,6 @@ package com.example.james.sharedclasses;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Serializable User class
- */
 public class User {
     @SerializedName("username")
     @Expose
@@ -13,9 +10,6 @@ public class User {
     @SerializedName("password")
     @Expose
     private String password;
-    @SerializedName("profile")
-    @Expose
-    private Profile profile;
     @SerializedName("connection_id")
     @Expose(serialize = false)
     private String connectionId;
@@ -29,22 +23,13 @@ public class User {
 
     /**
      *
-     * @param occupation
-     * @param phone
      * @param username
-     * @param email
-     * @param name
      * @param password
      */
-    public User(String name, String username, String password, String email, String phone, String occupation) {
+    public User(String username, String password) {
 
         this.username = username;
         this.password = password;
-        this.profile = new Profile(name, email, phone, occupation);
-    }
-
-    public User(String name, String occupation) {
-        this(name, "user", "pass", "email", "phone", occupation);
     }
 
     /**

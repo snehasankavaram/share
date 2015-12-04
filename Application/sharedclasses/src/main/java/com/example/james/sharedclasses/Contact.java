@@ -1,5 +1,6 @@
 package com.example.james.sharedclasses;
 
+import com.google.android.gms.wearable.DataMap;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -14,7 +15,7 @@ public class Contact implements Serializable {
     private Profile profile;
     @SerializedName("notes")
     @Expose
-    private Note notes;
+    private String notes;
 
     /**
      * No args constructor for use in serialization
@@ -24,23 +25,32 @@ public class Contact implements Serializable {
 
     }
 
-    public Contact(Profile profile, Note notes) {
+    public Contact(Profile profile, String notes) {
         this.profile = profile;
         this.notes = notes;
     }
 
     public Contact(Profile profile) {
         this.profile = profile;
-        this.notes = new Note("");
+        this.notes = "";
+    }
+
+    public Contact(DataMap map) {
+        this(new Profile(map.getDataMap("profile")), map.getString("notes"));
     }
 
     public Profile getProfile () {
         return this.profile;
     }
 
-    public Note getNotes () {
+    public String getNotes () {
         return this.notes;
     }
 
+    public DataMap putToDataMap(DataMap map) {
+        map.putDataMap("profile", this.profile.putToDataMap(new DataMap()));
+        map.putString("notes", this.notes);
+        return map;
+    }
 
 }

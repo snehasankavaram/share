@@ -17,7 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.james.sharedclasses.Contact;
-import com.example.james.sharedclasses.Note;
 import com.example.james.sharedclasses.Profile;
 
 import java.util.ArrayList;
@@ -27,23 +26,12 @@ import java.util.ArrayList;
  */
 public class ContactsAdapter extends BaseAdapter {
     ArrayList<Contact> contactsList = new ArrayList<>();
-    //create random contacts for now, but fetch contacts from backend and add to ArrayList
-    String [] names = {"Sally Smith", "Bob Jones", "Dylan Lee", "Carry George", "Jonas Thomson"};
-    String [] occupations = {"CEO of Tech, Inc.", "Engineer at Snapchat", "Entrepreneur", "Contractor", "Project Manager"};
-    String [] notes = {"Shows potential", "I think I like this guy", "Seems legit, brief conversation at tech conference in May", "Met in startup fair, need to look at design documents", "Told him I will get back to him"};
-
 
     private Context ctx = null;
 
     public ContactsAdapter(Context context) {
         this.ctx = context;
-
-        for (int i = 0; i < names.length; i++) {
-            Profile p = new Profile(names[i], names[i]+"@gmail.com","136-234-1111", occupations[i]);
-            Note n = new Note(notes[i]);
-            Contact c = new Contact(p, n);
-            contactsList.add(c);
-        }
+        getContacts();
     }
 
     @Override
@@ -108,5 +96,16 @@ public class ContactsAdapter extends BaseAdapter {
         //Bitmap _bmp = Bitmap.createScaledBitmap(output, 60, 60, false);
         //return _bmp;
         return output;
+    }
+
+    public void  getContacts() {
+        String [] names = {"Sally Smith", "Bob Jones", "Dylan Lee", "Carry George", "Jonas Thomson"};
+        String [] occupations = {"CEO of Tech, Inc.", "Engineer at Snapchat", "Entrepreneur", "Contractor", "Project Manager"};
+        String [] notes = {"Shows potential", "I think I like this guy", "Seems legit, brief conversation at tech conference in May", "Met in startup fair, need to look at design documents", "Told him I will get back to him"};
+        for (int i = 0; i < names.length; i++) {
+            Profile p = new Profile(names[i], names[i]+"@gmail.com","136-234-1111", occupations[i]);
+            Contact c = new Contact(p, notes[i]);
+            contactsList.add(c);
+        }
     }
 }

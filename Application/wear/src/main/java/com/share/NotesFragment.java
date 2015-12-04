@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.james.sharedclasses.Note;
 import com.example.james.sharedclasses.User;
 
 
@@ -35,9 +34,9 @@ public class NotesFragment extends Fragment {
         TextView notes = (TextView) view.findViewById(R.id.notesText);
 
         Bundle args = getArguments();
-        Note n = (Note) args.get("notes");
+        String n = (String) args.get("notes");
         if (n != null) {
-            notes.setText(n.getNote());
+            notes.setText(n);
         }
         return view;
     }
