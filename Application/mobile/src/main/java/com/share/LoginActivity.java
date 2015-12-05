@@ -20,6 +20,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,6 +35,14 @@ import android.widget.Toast;
 import com.example.james.sharedclasses.GetUserRequestWrapper;
 import com.example.james.sharedclasses.Profile;
 import com.example.james.sharedclasses.ServerEndpoint;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.PutDataRequest;
+import com.google.android.gms.wearable.Wearable;
 import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.logging.HttpLoggingInterceptor;
@@ -82,20 +91,27 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mLoginFormView;
 
     private Retrofit retrofit;
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-            OkHttpClient client = new OkHttpClient();
-            HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            client.interceptors().add(interceptor);
+
+        OkHttpClient client = new OkHttpClient();
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        client.interceptors().add(interceptor);
         retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(getString(R.string.WEBSITE_URL))
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
+
+        mGoogleApiClient = new GoogleApiClient.Builder( this )
+                .addApi(Wearable.API)
+                .build();
+        mGoogleApiClient.connect();
 
         // Set up the login form.
         mUsernameView = (AutoCompleteTextView) findViewById(R.id.user);
@@ -384,12 +400,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             switch (success) {
                 case 0: {
                     SharedPreferences mPrefs = getSharedPreferences(getString(R.string.USER_DATA), Context.MODE_PRIVATE);
-                    SharedPreferences.Editor ed=mPrefs.edit();
+                    SharedPreferences.Editor ed= mPrefs.edit();
                     Gson gson = new Gson();
                     ed.putString("username", mUser);
                     ed.putString("profile", gson.toJson(profile));
                     ed.commit();
 
+                    sendDataToWear(mUser, profile);
                     Intent i = new Intent(getBaseContext(), ContactsListActivity.class);
                     startActivity(i);
                     break;
@@ -417,6 +434,25 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
         }
+    }
+
+    private void sendDataToWear(String username, Profile profile) {
+
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/username");
+
+        putDataMapReq.getDataMap().putString("username", username);
+        putDataMapReq.getDataMap().putDataMap("profile", profile.putToDataMap(new DataMap()));
+        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+        PendingResult<DataApi.DataItemResult> pendingResult =
+                Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
+        pendingResult.setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
+            @Override
+            public void onResult(final DataApi.DataItemResult result) {
+                if(result.getStatus().isSuccess()) {
+                    Log.d(TAG, "Data item set: " + result.getDataItem().getUri());
+                }
+            }
+        });
     }
 }
 

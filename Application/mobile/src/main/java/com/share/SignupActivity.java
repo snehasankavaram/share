@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,6 +34,9 @@ public class SignupActivity extends Activity {
     @InjectView(R.id.input_name) EditText _nameText;
     @InjectView(R.id.input_email) EditText _emailText;
     @InjectView(R.id.input_password) EditText _passwordText;
+    @InjectView(R.id.input_phone) EditText _phoneText;
+    @InjectView(R.id.input_occupation) EditText _occupationText;
+    @InjectView(R.id.input_username) EditText _usernameText;
     @InjectView(R.id.btn_signup) Button _signupButton;
     @InjectView(R.id.link_login) TextView _loginLink;
 
@@ -79,11 +83,14 @@ public class SignupActivity extends Activity {
         progressDialog.setMessage("Creating Account...");
         progressDialog.show();
 
-        String name = _nameText.getText().toString();
+        String username = _usernameText.getText().toString();
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
+        String name = _nameText.getText().toString();
+        String phone = _phoneText.getText().toString();
+        String occupation = _occupationText.getText().toString();
 
-        mAuthTask = new UserRegistrationTask(name, email, password);
+        mAuthTask = new UserRegistrationTask(name, email, password, phone, occupation, username);
         mAuthTask.execute((Void) null);
     }
 
@@ -93,6 +100,9 @@ public class SignupActivity extends Activity {
         String name = _nameText.getText().toString();
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
+        String username = _usernameText.getText().toString();
+        String phone = _phoneText.getText().toString();
+        String occupation = _occupationText.getText().toString();
 
         if (name.isEmpty() || name.length() < 3) {
             _nameText.setError("at least 3 characters");
@@ -113,6 +123,27 @@ public class SignupActivity extends Activity {
             valid = false;
         } else {
             _passwordText.setError(null);
+        }
+
+        if (username.isEmpty() || username.length() < 3) {
+            _usernameText.setError("at least 3 characters");
+            valid = false;
+        } else {
+            _usernameText.setError(null);
+        }
+
+        if (phone.isEmpty() || !Patterns.PHONE.matcher(phone).matches()) {
+            _phoneText.setError("enter a valid phone number");
+            valid = false;
+        } else {
+            _phoneText.setError(null);
+        }
+
+        if (occupation.isEmpty()) {
+            _occupationText.setError("Cannot be blank");
+            valid = false;
+        } else {
+            _occupationText.setError(null);
         }
 
         return valid;
@@ -139,11 +170,17 @@ public class SignupActivity extends Activity {
         private final String mName;
         private final String mEmail;
         private final String mPassword;
+        private final String mUsername;
+        private final String mOccupation;
+        private final String mPhone;
 
-        UserRegistrationTask(String name, String email, String password) {
+        UserRegistrationTask(String name, String email, String password, String phone, String occupation, String username) {
             mName = name;
             mEmail = email;
             mPassword = password;
+            mUsername = username;
+            mOccupation = occupation;
+            mPhone = phone;
         }
 
         @Override
@@ -170,11 +207,11 @@ public class SignupActivity extends Activity {
                     .build();
 
             ServerEndpoint service = retrofit.create(ServerEndpoint.class);
-            Call<GetUserRequestWrapper> call = service.createUser(new GetUserRequestWrapper(new User(mName, mPassword), new Profile("Testname", mEmail, "testPhone", "testOccupation")));
+            Call<GetUserRequestWrapper> call = service.createUser(new GetUserRequestWrapper(new User(mUsername, mPassword), new Profile(mName, mEmail, mPhone, mOccupation)));
             try {
                 Response response = call.execute();
                 com.squareup.okhttp.Response raw = response.raw();
-                Log.d(TAG, String.format("Status: %d. Username: %s ", raw.code(), mName));
+                Log.d(TAG, String.format("Status: %d. Username: %s ", raw.code(), mUsername));
                 return true;
             } catch (IOException e) {
                 return false;

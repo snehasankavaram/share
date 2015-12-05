@@ -22,4 +22,5 @@ public interface ServerEndpoint {
 
     @GET("/contacts/index")
     Call<GetContactsRequestWrapper> getContactsForUser(@Query("username") String username);
+
 }

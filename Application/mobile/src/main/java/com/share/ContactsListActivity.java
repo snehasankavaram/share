@@ -52,7 +52,6 @@ public class ContactsListActivity extends AppCompatActivity {
     private GoogleApiClient mGoogleApiClient;
     private static final String CONTACTS_KEY = "com.example.key.contacts";
     private static final String TAG = "ContactsListActivity";
-    public static final String SHAREDPREF_FILE = "ContactsListActivity";
     private Retrofit retrofit;
 
     @Override

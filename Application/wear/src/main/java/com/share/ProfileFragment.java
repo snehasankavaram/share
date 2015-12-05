@@ -17,22 +17,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.james.sharedclasses.Profile;
-import com.example.james.sharedclasses.User;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ProfileFragment extends Fragment {
-    User p;
+public class ProfileFragment extends Fragment implements RetrieveMyProfileTaskListener {
+    Profile p;
+    TextView name;
+    TextView phone;
+    TextView occupation;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            Bundle args = getArguments();
-            p = (User) args.get("files");
-        }
     }
 
     @Override
@@ -40,22 +38,24 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
-        TextView name = (TextView) view.findViewById(R.id.contact_name);
-        TextView phone = (TextView) view.findViewById(R.id.contact_phone);
-        TextView occupation = (TextView) view.findViewById(R.id.contact_occupation);
+        name = (TextView) view.findViewById(R.id.contact_name);
+        phone = (TextView) view.findViewById(R.id.contact_phone);
+        occupation = (TextView) view.findViewById(R.id.contact_occupation);
 
         Bundle args = getArguments();
-        Profile p = (Profile) args.get("profile");
-        if (p != null) {
-            name.setText(p.getName());
-            phone.setText("(925)-351-1211");
-            occupation.setText(p.getOccupation());
+        if (args != null) {
+            Profile p = (Profile) args.get("profile");
+            if (p != null) {
+                name.setText(p.getName());
+                phone.setText("(925)-351-1211");
+                occupation.setText(p.getOccupation());
+            }
         }
 
         //query for profile picture (using id) here
         int [] images = {R.drawable.face1, R.drawable.face2, R.drawable.face3, R.drawable.face4};
 
-        int selected = images[p.getName().charAt(0) % 4];
+        int selected = images[name.getText().charAt(0) % 4];
 
         ((ImageView) view.findViewById(R.id.imageView)).setImageBitmap(getCroppedBitmap(BitmapFactory.decodeResource(getResources(), selected)));
         return view;
@@ -83,4 +83,10 @@ public class ProfileFragment extends Fragment {
         return output;
     }
 
+    @Override
+    public void onProfileAvailable(Profile profile) {
+        name.setText(p.getName());
+        phone.setText(p.getPhone());
+        occupation.setText(p.getOccupation());
+    }
 }

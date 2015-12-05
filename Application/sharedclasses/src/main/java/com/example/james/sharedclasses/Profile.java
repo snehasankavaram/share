@@ -120,4 +120,5 @@ public class Profile implements Serializable {
     public void setOccupation(String occupation) {
         this.occupation = occupation;
     }
+
 }
