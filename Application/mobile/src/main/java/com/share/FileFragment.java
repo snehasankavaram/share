@@ -6,12 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import com.example.james.sharedclasses.ContactsAdapter;
 import com.example.james.sharedclasses.File;
 import com.example.james.sharedclasses.FilesAdapter;
-import com.example.james.sharedclasses.Profile;
 
 import java.util.ArrayList;
 

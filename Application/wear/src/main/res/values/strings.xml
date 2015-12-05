@@ -13,4 +13,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_accept_connection">AcceptConnectionActivity</string>
+    <string name="title_activity_login">LoginActivity</string>
+
+    <!-- Backend website -->
+    <string name="WEBSITE_URL">http://share-backend.herokuapp.com/</string>
 </resources>

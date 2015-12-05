@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.example.james.sharedclasses.Contact;
+import com.example.james.sharedclasses.LoginUtils;
 
 
 /**
@@ -22,7 +23,6 @@ import com.example.james.sharedclasses.Contact;
 public class ContactsFragment extends Fragment {
     private GridView mGridView;
     private DismissOverlayView mDismissOverlayView;
-
     public ContactsFragment() {
         // Required empty public constructor
     }
@@ -32,12 +32,12 @@ public class ContactsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_contacts, container, false);
         mGridView = (GridView) view.findViewById(R.id.grid);
+        ContactsAdapter adapter = new ContactsAdapter(this.getContext(), LoginUtils.getContacts(getActivity()));
+        mGridView.setAdapter(adapter);
 
-        mGridView.setAdapter(new ContactsAdapter(this.getContext()));
         mDismissOverlayView = (DismissOverlayView) view.findViewById(R.id.dismiss);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -67,5 +67,4 @@ public class ContactsFragment extends Fragment {
         });
         return view;
     }
-
 }

@@ -4,9 +4,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -18,6 +20,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -27,9 +30,35 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.james.sharedclasses.Contact;
+import com.example.james.sharedclasses.ContactProfileWrapper;
+import com.example.james.sharedclasses.GetContactsRequestWrapper;
+import com.example.james.sharedclasses.GetUserRequestWrapper;
+import com.example.james.sharedclasses.LoginUtils;
+import com.example.james.sharedclasses.Profile;
+import com.example.james.sharedclasses.ServerEndpoint;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.PutDataRequest;
+import com.google.android.gms.wearable.Wearable;
+import com.google.gson.Gson;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.logging.HttpLoggingInterceptor;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit.Call;
+import retrofit.GsonConverterFactory;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -42,6 +71,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
+
+    private static final String BASE_URL = "http://share-backend.herokuapp.com/";
+
+    private static final String TAG = "LoginActivity";
 
     /**
      * A dummy authentication store containing known user names and passwords.
@@ -56,18 +89,37 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private UserLoginTask mAuthTask = null;
 
     // UI references.
-    private AutoCompleteTextView mEmailView;
+    private AutoCompleteTextView mUsernameView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+
+    private Retrofit retrofit;
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        OkHttpClient client = new OkHttpClient();
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        client.interceptors().add(interceptor);
+        retrofit = new Retrofit.Builder()
+                .baseUrl(getString(R.string.WEBSITE_URL))
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        mGoogleApiClient = new GoogleApiClient.Builder( this )
+                .addApi(Wearable.API)
+                .build();
+        mGoogleApiClient.connect();
+
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        populateAutoComplete();
+        mUsernameView = (AutoCompleteTextView) findViewById(R.id.user);
+//        populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -91,6 +143,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        TextView _signupLink = (TextView) findViewById(R.id.link_signup);
+        _signupLink.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // Start the Signup activity
+                Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void populateAutoComplete() {
@@ -109,7 +172,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             return true;
         }
         if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
+            Snackbar.make(mUsernameView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
                     .setAction(android.R.string.ok, new View.OnClickListener() {
                         @Override
                         @TargetApi(Build.VERSION_CODES.M)
@@ -148,11 +211,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
 
         // Reset errors.
-        mEmailView.setError(null);
+        mUsernameView.setError(null);
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
+        String email = mUsernameView.getText().toString();
         String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
@@ -167,12 +230,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
+            mUsernameView.setError(getString(R.string.error_field_required));
+            focusView = mUsernameView;
             cancel = true;
         } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+            mUsernameView.setError(getString(R.string.error_invalid_email));
+            focusView = mUsernameView;
             cancel = true;
         }
 
@@ -275,7 +338,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 new ArrayAdapter<>(LoginActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
-        mEmailView.setAdapter(adapter);
+        mUsernameView.setAdapter(adapter);
     }
 
 
@@ -293,50 +356,74 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserLoginTask extends AsyncTask<Void, Void, Integer> {
 
-        private final String mEmail;
+        private final String mUser;
         private final String mPassword;
+        private Profile profile;
 
-        UserLoginTask(String email, String password) {
-            mEmail = email;
+        UserLoginTask(String user, String password) {
+            mUser = user;
             mPassword = password;
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
+        protected Integer doInBackground(Void... params) {
+            ServerEndpoint service = retrofit.create(ServerEndpoint.class);
+            Call<GetUserRequestWrapper> call = service.getUser(mUser);
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
+                Response<GetUserRequestWrapper> response = call.execute();
+                GetUserRequestWrapper u = response.body();
+                if (u == null) {
+                    return 1;
                 }
-            }
+                if (u.getUser().getPassword().equals(mPassword)){
+                    profile = u.getProfile();
+                    ArrayList<Contact> contacts = getContacts(u.getUser().getUsername());
+                    LoginUtils.setContacts(getBaseContext(), contacts);
+                    sendContactsToWear(contacts);
+                    return 0;
+                }
+                return 2;
 
-            // TODO: register the new account here.
-            return true;
+            } catch (IOException e) {
+                return 3;
+            }
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected void onPostExecute(final Integer success) {
             mAuthTask = null;
             showProgress(false);
+            switch (success) {
+                case 0: {
+                    SharedPreferences mPrefs = getSharedPreferences(getString(R.string.USER_DATA), Context.MODE_PRIVATE);
+                    SharedPreferences.Editor ed = mPrefs.edit();
+                    Gson gson = new Gson();
+                    ed.putString("username", mUser);
+                    ed.putString("profile", gson.toJson(profile));
+                    ed.commit();
 
-            if (success) {
-                Intent i = new Intent(getBaseContext(), ContactsListActivity.class);
-                startActivity(i);
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                    sendDataToWear(mUser, profile);
+                    Intent i = new Intent(getBaseContext(), ContactsListActivity.class);
+                    startActivity(i);
+                    break;
+                }
+                case 1: {
+                    mUsernameView.setError("Username not found");
+                    mUsernameView.requestFocus();
+                    break;
+                }
+                case 2: {
+                    mPasswordView.setError(getString(R.string.error_incorrect_password));
+                    mPasswordView.requestFocus();
+                    break;
+                }
+                case 3: {
+                    Toast error = Toast.makeText(getBaseContext(), "Needs network connection", Toast.LENGTH_LONG);
+                    error.show();
+                    break;
+                }
             }
         }
 
@@ -345,6 +432,67 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
         }
+    }
+
+    private void sendDataToWear(String username, Profile profile) {
+
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/username");
+
+        putDataMapReq.getDataMap().putString("username", username);
+        putDataMapReq.getDataMap().putDataMap("profile", profile.putToDataMap(new DataMap()));
+        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+        PendingResult<DataApi.DataItemResult> pendingResult =
+                Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
+        pendingResult.setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
+            @Override
+            public void onResult(final DataApi.DataItemResult result) {
+                if(result.getStatus().isSuccess()) {
+                    Log.d(TAG, "Data item set: " + result.getDataItem().getUri());
+                }
+            }
+        });
+    }
+
+    public ArrayList<Contact> getContacts(String username) {
+        ArrayList<Contact> contactsList = new ArrayList<>();
+        ServerEndpoint service = retrofit.create(ServerEndpoint.class);
+        Call<GetContactsRequestWrapper> call = service.getContactsForUser(username);
+        try {
+            Response<GetContactsRequestWrapper> response = call.execute();
+            GetContactsRequestWrapper responseWrapper = response.body();
+            if (responseWrapper != null) {
+                List<ContactProfileWrapper> contactsWrapper =  responseWrapper.getContacts();
+                for (ContactProfileWrapper contactWrapper: contactsWrapper) {
+                    String notes = contactWrapper.getContact().getNotes();
+                    Profile p = contactWrapper.getProfile();
+                    contactsList.add(new Contact(p, notes));
+                }
+            }
+
+        } catch (IOException e) {
+
+        }
+        return contactsList;
+    }
+
+    private void sendContactsToWear(ArrayList<Contact> contacts) {
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/contacts");
+        ArrayList<DataMap> contactsAsDataMaps = new ArrayList<>();
+        for (Contact c : contacts) {
+            contactsAsDataMaps.add(c.putToDataMap(new DataMap()));
+        }
+        putDataMapReq.getDataMap().putDataMapArrayList("contacts", contactsAsDataMaps);
+        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+        PendingResult<DataApi.DataItemResult> pendingResult =
+                Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
+        pendingResult.setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
+            @Override
+            public void onResult(final DataApi.DataItemResult result) {
+                if(result.getStatus().isSuccess()) {
+                    Log.d(TAG, "Data item set: " + result.getDataItem().getUri());
+                }
+            }
+        });
     }
 }
 

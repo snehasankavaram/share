@@ -13,50 +13,57 @@ import android.widget.ListView;
 
 import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.ContactsAdapter;
-import com.example.james.sharedclasses.Note;
-import com.example.james.sharedclasses.Profile;
+import com.example.james.sharedclasses.LoginUtils;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.NodeApi;
+import com.google.android.gms.wearable.Wearable;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
 
-public class ContactsListActivity extends AppCompatActivity implements Observer{
+import retrofit.GsonConverterFactory;
+import retrofit.Retrofit;
+
+public class ContactsListActivity extends AppCompatActivity {
 
     private ContactsAdapter adapter;
+    private GoogleApiClient mGoogleApiClient;
+    private static final String CONTACTS_KEY = "com.example.key.contacts";
+    private static final String TAG = "ContactsListActivity";
+    private Retrofit retrofit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
 
+        OkHttpClient client = new OkHttpClient();
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        client.interceptors().add(interceptor);
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl(getString(R.string.WEBSITE_URL))
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        Intent intent = new Intent(getApplicationContext(), MobileMessageService.class);
+        startService(intent);
+
         ArrayList <Contact> contactsList = new ArrayList<>();
-
-
-        //create random contacts for now, but fetch contacts from backend and add to ArrayList
-        String [] names = {"Sally Smith", "Bob Jones", "Dylan Christopher Lee", "Carry George", "Jonas Thomson"};
-        String [] occupations = {"CEO of Tech, Inc.", "Engineer at Snapchat", "Entrepreneur", "Contractor", "Project Manager"};
-        String [] notes = {"Shows potential", "I think I like this guy", "Seems legit, brief conversation at tech conference in May", "Met in startup fair, need to look at design documents", "Told him I will get back to him"};
-
-
-
-        for (int i = 0; i < names.length; i++) {
-            Profile p = new Profile(names[i], occupations[i]);
-            Note n = new Note(notes[i]);
-            Contact c = new Contact(p, n);
-            contactsList.add(c);
-        }
-
-
         adapter = new ContactsAdapter(this, contactsList);
 
         ListView listView = (ListView) findViewById(R.id.list);
         listView.setAdapter(adapter);
-//        EarthquakeInfoSingleton.getInstance().addObserver(this);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -69,7 +76,37 @@ public class ContactsListActivity extends AppCompatActivity implements Observer{
             }
         });
 
-        // Handle Toolbar
+        createToolbar();
+
+        mGoogleApiClient = new GoogleApiClient.Builder( this )
+                .addApi(Wearable.API)
+                .build();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.clear();
+        adapter.addAll(LoginUtils.getContacts(this));
+        adapter.notifyDataSetChanged();
+    }
+
+    private void sendMessage( final String path, final String text ) {
+        new Thread( new Runnable() {
+            @Override
+            public void run() {
+                mGoogleApiClient.connect();
+                NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.getConnectedNodes( mGoogleApiClient ).await();
+                for(Node node : nodes.getNodes()) {
+                    MessageApi.SendMessageResult result = Wearable.MessageApi.sendMessage(
+                            mGoogleApiClient, node.getId(), path, text.getBytes() ).await();
+                }
+            }
+        }).start();
+    }
+
+    public void createToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -132,11 +169,5 @@ public class ContactsListActivity extends AppCompatActivity implements Observer{
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void update(Observable observable, Object data) {
-        ListView listView = (ListView) findViewById(R.id.list);
-        ((ContactsAdapter) listView.getAdapter()).notifyDataSetChanged();
     }
 }

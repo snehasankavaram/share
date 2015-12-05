@@ -30,10 +30,30 @@ public class ProfileFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.contact_profile, container, false);
         Bundle args = getArguments();
         Profile p = (Profile) args.get("profile");
-
-        ((TextView) rootView.findViewById(R.id.name)).setText(p.getName());
-        ((TextView) rootView.findViewById(R.id.occupation)).setText(p.getOccupation());
-                //Integer.toString(args.getInt(ARG_OBJECT)));
+        if (p.getName() != null) {
+            ((TextView) rootView.findViewById(R.id.name)).setText(p.getName());
+        }
+        else {
+            ((TextView) rootView.findViewById(R.id.name)).setText("NAME IS NULL");
+        }
+        if (p.getOccupation() != null) {
+            ((TextView) rootView.findViewById(R.id.occupation)).setText(p.getOccupation());
+        }
+        else {
+            ((TextView) rootView.findViewById(R.id.occupation)).setText("OCCUPATION IS NULL");
+        }
+        if (p.getEmail() != null) {
+            ((TextView) rootView.findViewById(R.id.email)).setText(p.getEmail());
+        }
+        else {
+            ((TextView) rootView.findViewById(R.id.email)).setText("EMAIL IS NULL");
+        }
+        if (p.getPhone() != null) {
+            ((TextView) rootView.findViewById(R.id.phone)).setText(p.getPhone());
+        }
+        else {
+            ((TextView) rootView.findViewById(R.id.phone)).setText("PHONE IS NULL");
+        }
 
         //query for profile picture (using id) here
         int [] images = {R.drawable.face1, R.drawable.face2, R.drawable.face3, R.drawable.face4};

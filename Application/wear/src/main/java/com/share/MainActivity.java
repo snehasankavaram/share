@@ -1,5 +1,6 @@
 package com.share;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -10,7 +11,11 @@ import android.support.wearable.view.WatchViewStub;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
+import com.example.james.sharedclasses.LoginUtils;
 import com.example.james.sharedclasses.Profile;
+
+import retrofit.GsonConverterFactory;
+import retrofit.Retrofit;
 
 public class MainActivity extends FragmentActivity {
     private static final int NUM_PAGES = 3;
@@ -18,11 +23,20 @@ public class MainActivity extends FragmentActivity {
     private PagerAdapter mPagerAdapter;
     private DismissOverlayView mDismissOverlayView;
     private GestureDetector mGestureDetector;
+    private Retrofit retrofit;
+    private final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl(getString(R.string.WEBSITE_URL))
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
             @Override
@@ -42,6 +56,13 @@ public class MainActivity extends FragmentActivity {
 
             }
         });
+        Intent intent = new Intent(getApplicationContext(), DataLayerListenerService.class);
+        startService(intent);
+
+        if (!LoginUtils.isLoggedIn(this)) {
+            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(i);
+        }
     }
 
     private class MainPagerAdapter extends FragmentPagerAdapter {
@@ -83,8 +104,39 @@ public class MainActivity extends FragmentActivity {
         }
 
         private Profile getSelf() {
-            Profile p = new Profile("Sarah Hyun", "Developer");
-            return p;
+            Profile p = LoginUtils.getProfile(getBaseContext());
+            if (p != null) {
+                return p;
+            }
+            return new Profile("asdf","ggg","3","asdf");
         }
+//        private void getSelf(final ProfileFragment fragment) {
+//            ServerEndpoint service = retrofit.create(ServerEndpoint.class);
+//            Call<GetUserRequestWrapper> call = service.getUser(LoginUtils.getLoginToken(MainActivity.this));
+//            Log.d(TAG, "get self called");
+//            call.enqueue(new Callback<GetUserRequestWrapper>() {
+//                @Override
+//                public void onResponse(Response<GetUserRequestWrapper> response, Retrofit retrofit) {
+//                    // response.isSuccess() is true if the response code is 2xx
+//                    Log.d(TAG, "Got response");
+//                    if (response.isSuccess()) {
+//                        GetUserRequestWrapper user = response.body();
+////                        Bundle args = new Bundle();
+////                        args.putSerializable("profile", user.getProfile());
+////                        Log.d(TAG, "Put profile in args");
+////                        fragment.setArguments(args);
+//                        fragment.onProfileAvailable(user.getProfile());
+//                    } else {
+//                        int statusCode = response.code();
+//                        // handle request errors yourself
+//                        ResponseBody errorBody = response.errorBody();
+//                    }
+//                }
+//                @Override
+//                public void onFailure(Throwable t) {
+//                    // handle execution failures like no internet connectivity
+//                }
+//            });
+//        }
     }
 }
