@@ -9,6 +9,9 @@ import android.util.Log;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.example.james.sharedclasses.Contact;
+import com.example.james.sharedclasses.CreateContactRequest;
+import com.example.james.sharedclasses.LoginUtils;
 import com.example.james.sharedclasses.ServerEndpoint;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -19,6 +22,7 @@ import com.google.android.gms.wearable.WearableListenerService;
 import com.squareup.okhttp.ResponseBody;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 import retrofit.Call;
 import retrofit.Callback;
@@ -98,12 +102,14 @@ public class MobileMessageService extends WearableListenerService implements Goo
         ServerEndpoint service = retrofit.create(ServerEndpoint.class);
         SharedPreferences mPrefs = getSharedPreferences(getString(R.string.USER_DATA), Context.MODE_PRIVATE);
         String username = mPrefs.getString("username", "");
-        Call<retrofit.Response> call = service.createContact(username, "fdsa");
-        call.enqueue(new Callback<retrofit.Response>() {
+        Call<CreateContactRequest> call = service.createContact(new CreateContactRequest(username, "fdsa"));
+        call.enqueue(new Callback<CreateContactRequest>() {
             @Override
-            public void onResponse(retrofit.Response<retrofit.Response> response, Retrofit retrofit) {
+            public void onResponse(retrofit.Response<CreateContactRequest> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
-                     Log.d(TAG, "Successfully added contact");
+                    Log.d(TAG, "Successfully added contact");
+                    ArrayList<Contact> contacts = LoginUtils.getContacts(getBaseContext());
+//                    contacts.add()
                 } else {
                     int statusCode = response.code();
 

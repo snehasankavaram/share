@@ -1,11 +1,14 @@
-package com.share;
+package com.example.james.sharedclasses;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.example.james.sharedclasses.Profile;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 /**
  * Created by james on 12/4/15.
@@ -14,6 +17,7 @@ public class LoginUtils {
     private static final String PREFS_NAME = "login.prefs";
     private static final String LOGIN_KEY = "username";
     private static final String PROFILE_KEY = "profile";
+    private static final String CONTACTS_KEY = "contacts";
 
 
     public static void setLoginToken(Context context, String token) {
@@ -39,6 +43,22 @@ public class LoginUtils {
             return gson.fromJson(parser.parse(profileString).getAsJsonObject(), Profile.class);
         }
         return null;
+    }
+
+    public static void setContacts(Context context, ArrayList<Contact> contacts) {
+        Gson gson = new Gson();
+        setToken(context, CONTACTS_KEY, gson.toJson(contacts));
+    }
+
+    public static ArrayList<Contact> getContacts(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        String stringContacts = prefs.getString(CONTACTS_KEY, null);
+        if (stringContacts != null) {
+            Type type = new TypeToken<ArrayList<Contact>>(){}.getType();
+            Gson gson = new Gson();
+            return gson.fromJson(stringContacts, type);
+        }
+        return new ArrayList<>();
     }
 
     private static void setToken(Context context, String key, String token) {

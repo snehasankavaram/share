@@ -1,7 +1,6 @@
 package com.example.james.sharedclasses;
 
 import retrofit.Call;
-import retrofit.Response;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.POST;
@@ -18,7 +17,7 @@ public interface ServerEndpoint {
     Call<GetUserRequestWrapper> createUser(@Body GetUserRequestWrapper user);
 
     @POST("/contacts/create")
-    Call<Response> createContact(@Body String my_username, @Body String contact_username);
+    Call<CreateContactRequest> createContact(@Body CreateContactRequest request);
 
     @GET("/contacts/index")
     Call<GetContactsRequestWrapper> getContactsForUser(@Query("username") String username);

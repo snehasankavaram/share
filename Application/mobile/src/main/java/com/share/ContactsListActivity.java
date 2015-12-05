@@ -1,9 +1,6 @@
 package com.share;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -15,35 +12,24 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.james.sharedclasses.Contact;
-import com.example.james.sharedclasses.ContactProfileWrapper;
 import com.example.james.sharedclasses.ContactsAdapter;
-import com.example.james.sharedclasses.GetContactsRequestWrapper;
-import com.example.james.sharedclasses.Profile;
-import com.example.james.sharedclasses.ServerEndpoint;
+import com.example.james.sharedclasses.LoginUtils;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.wearable.DataApi;
-import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
-import com.google.android.gms.wearable.PutDataMapRequest;
-import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
-import retrofit.Call;
 import retrofit.GsonConverterFactory;
-import retrofit.Response;
 import retrofit.Retrofit;
 
 public class ContactsListActivity extends AppCompatActivity {
@@ -59,8 +45,14 @@ public class ContactsListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
 
+        OkHttpClient client = new OkHttpClient();
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        client.interceptors().add(interceptor);
+
         retrofit = new Retrofit.Builder()
                 .baseUrl(getString(R.string.WEBSITE_URL))
+                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -95,8 +87,9 @@ public class ContactsListActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        LoadContactsTask t = new LoadContactsTask(adapter);
-        t.execute();
+        adapter.clear();
+        adapter.addAll(LoginUtils.getContacts(this));
+        adapter.notifyDataSetChanged();
     }
 
     private void sendMessage( final String path, final String text ) {
@@ -111,31 +104,6 @@ public class ContactsListActivity extends AppCompatActivity {
                 }
             }
         }).start();
-    }
-
-    public ArrayList<Contact> getContacts() {
-        SharedPreferences mPrefs = getSharedPreferences(getString(R.string.USER_DATA), Context.MODE_PRIVATE);
-        String username = mPrefs.getString("username", "");
-        Log.d(TAG, "Got contacts for: " + username);
-        ArrayList<Contact> contactsList = new ArrayList<>();
-        ServerEndpoint service = retrofit.create(ServerEndpoint.class);
-        Call<GetContactsRequestWrapper> call = service.getContactsForUser(username);
-        try {
-            Response<GetContactsRequestWrapper> response = call.execute();
-            GetContactsRequestWrapper responseWrapper = response.body();
-            if (responseWrapper != null) {
-                List<ContactProfileWrapper> contactsWrapper =  responseWrapper.getContacts();
-                for (ContactProfileWrapper contactWrapper: contactsWrapper) {
-                    String notes = contactWrapper.getContact().getNotes();
-                    Profile p = contactWrapper.getProfile();
-                    contactsList.add(new Contact(p, notes));
-                }
-            }
-
-        } catch (IOException e) {
-
-        }
-        return contactsList;
     }
 
     public void createToolbar() {
@@ -201,44 +169,5 @@ public class ContactsListActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-
-    private void sendContactsToWear(ArrayList<Contact> contacts) {
-        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/contacts");
-        ArrayList<DataMap> contactsAsDataMaps = new ArrayList<>();
-        for (Contact c : contacts) {
-            contactsAsDataMaps.add(c.putToDataMap(new DataMap()));
-        }
-        putDataMapReq.getDataMap().putDataMapArrayList(CONTACTS_KEY, contactsAsDataMaps);
-        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
-        PendingResult<DataApi.DataItemResult> pendingResult =
-                Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
-        pendingResult.setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
-            @Override
-            public void onResult(final DataApi.DataItemResult result) {
-                if(result.getStatus().isSuccess()) {
-                    Log.d(TAG, "Data item set: " + result.getDataItem().getUri());
-                }
-            }
-        });
-    }
-
-    class LoadContactsTask extends AsyncTask<Void, Void, ArrayList<Contact>> {
-        private ContactsAdapter adapter;
-        public LoadContactsTask(ContactsAdapter adapter) {
-            this.adapter = adapter;
-        }
-
-        @Override
-        protected ArrayList<Contact> doInBackground(Void... params) {
-            return getContacts();
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Contact> contacts){
-            adapter.addAll(contacts);
-            adapter.notifyDataSetChanged();
-        }
     }
 }

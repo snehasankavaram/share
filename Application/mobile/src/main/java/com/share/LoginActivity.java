@@ -32,7 +32,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.james.sharedclasses.Contact;
+import com.example.james.sharedclasses.ContactProfileWrapper;
+import com.example.james.sharedclasses.GetContactsRequestWrapper;
 import com.example.james.sharedclasses.GetUserRequestWrapper;
+import com.example.james.sharedclasses.LoginUtils;
 import com.example.james.sharedclasses.Profile;
 import com.example.james.sharedclasses.ServerEndpoint;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -365,15 +369,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         @Override
         protected Integer doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return 3;
-            }
-
             ServerEndpoint service = retrofit.create(ServerEndpoint.class);
             Call<GetUserRequestWrapper> call = service.getUser(mUser);
             try {
@@ -384,6 +379,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 }
                 if (u.getUser().getPassword().equals(mPassword)){
                     profile = u.getProfile();
+                    ArrayList<Contact> contacts = getContacts(u.getUser().getUsername());
+                    LoginUtils.setContacts(getBaseContext(), contacts);
+                    sendContactsToWear(contacts);
                     return 0;
                 }
                 return 2;
@@ -400,7 +398,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             switch (success) {
                 case 0: {
                     SharedPreferences mPrefs = getSharedPreferences(getString(R.string.USER_DATA), Context.MODE_PRIVATE);
-                    SharedPreferences.Editor ed= mPrefs.edit();
+                    SharedPreferences.Editor ed = mPrefs.edit();
                     Gson gson = new Gson();
                     ed.putString("username", mUser);
                     ed.putString("profile", gson.toJson(profile));
@@ -442,6 +440,48 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         putDataMapReq.getDataMap().putString("username", username);
         putDataMapReq.getDataMap().putDataMap("profile", profile.putToDataMap(new DataMap()));
+        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+        PendingResult<DataApi.DataItemResult> pendingResult =
+                Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
+        pendingResult.setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
+            @Override
+            public void onResult(final DataApi.DataItemResult result) {
+                if(result.getStatus().isSuccess()) {
+                    Log.d(TAG, "Data item set: " + result.getDataItem().getUri());
+                }
+            }
+        });
+    }
+
+    public ArrayList<Contact> getContacts(String username) {
+        ArrayList<Contact> contactsList = new ArrayList<>();
+        ServerEndpoint service = retrofit.create(ServerEndpoint.class);
+        Call<GetContactsRequestWrapper> call = service.getContactsForUser(username);
+        try {
+            Response<GetContactsRequestWrapper> response = call.execute();
+            GetContactsRequestWrapper responseWrapper = response.body();
+            if (responseWrapper != null) {
+                List<ContactProfileWrapper> contactsWrapper =  responseWrapper.getContacts();
+                for (ContactProfileWrapper contactWrapper: contactsWrapper) {
+                    String notes = contactWrapper.getContact().getNotes();
+                    Profile p = contactWrapper.getProfile();
+                    contactsList.add(new Contact(p, notes));
+                }
+            }
+
+        } catch (IOException e) {
+
+        }
+        return contactsList;
+    }
+
+    private void sendContactsToWear(ArrayList<Contact> contacts) {
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/contacts");
+        ArrayList<DataMap> contactsAsDataMaps = new ArrayList<>();
+        for (Contact c : contacts) {
+            contactsAsDataMaps.add(c.putToDataMap(new DataMap()));
+        }
+        putDataMapReq.getDataMap().putDataMapArrayList("contacts", contactsAsDataMaps);
         PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
         PendingResult<DataApi.DataItemResult> pendingResult =
                 Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);

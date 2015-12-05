@@ -11,6 +11,7 @@ import android.support.wearable.view.WatchViewStub;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
+import com.example.james.sharedclasses.LoginUtils;
 import com.example.james.sharedclasses.Profile;
 
 import retrofit.GsonConverterFactory;
