@@ -40,12 +40,6 @@ import com.example.james.sharedclasses.LoginUtils;
 import com.example.james.sharedclasses.Profile;
 import com.example.james.sharedclasses.ServerEndpoint;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.wearable.DataApi;
-import com.google.android.gms.wearable.DataMap;
-import com.google.android.gms.wearable.PutDataMapRequest;
-import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
@@ -382,7 +376,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     Log.d(TAG, profile.getName());
                     ArrayList<Contact> contacts = getContacts(u.getUser().getUsername());
                     LoginUtils.setContacts(getBaseContext(), contacts);
-                    sendContactsToWear(contacts);
+                    DataLayerUtil.sendContactsToWear(mGoogleApiClient, contacts, TAG);
                     return 0;
                 }
                 return 2;
@@ -405,7 +399,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     ed.putString("profile", gson.toJson(profile));
                     ed.commit();
 
-                    sendDataToWear(mUser, profile);
+                    DataLayerUtil.sendUserDataToWear(mGoogleApiClient, mUser, profile, TAG);
                     Intent i = new Intent(getBaseContext(), ContactsListActivity.class);
                     startActivity(i);
                     break;
@@ -435,25 +429,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
-    private void sendDataToWear(String username, Profile profile) {
-
-        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/username");
-
-        putDataMapReq.getDataMap().putString("username", username);
-        putDataMapReq.getDataMap().putDataMap("profile", profile.putToDataMap(new DataMap()));
-        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
-        PendingResult<DataApi.DataItemResult> pendingResult =
-                Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
-        pendingResult.setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
-            @Override
-            public void onResult(final DataApi.DataItemResult result) {
-                if(result.getStatus().isSuccess()) {
-                    Log.d(TAG, "Data item set: " + result.getDataItem().getUri());
-                }
-            }
-        });
-    }
-
     public ArrayList<Contact> getContacts(String username) {
         ArrayList<Contact> contactsList = new ArrayList<>();
         ServerEndpoint service = retrofit.create(ServerEndpoint.class);
@@ -475,26 +450,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         }
         return contactsList;
-    }
-
-    private void sendContactsToWear(ArrayList<Contact> contacts) {
-        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/contacts");
-        ArrayList<DataMap> contactsAsDataMaps = new ArrayList<>();
-        for (Contact c : contacts) {
-            contactsAsDataMaps.add(c.putToDataMap(new DataMap()));
-        }
-        putDataMapReq.getDataMap().putDataMapArrayList("contacts", contactsAsDataMaps);
-        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
-        PendingResult<DataApi.DataItemResult> pendingResult =
-                Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
-        pendingResult.setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
-            @Override
-            public void onResult(final DataApi.DataItemResult result) {
-                if(result.getStatus().isSuccess()) {
-                    Log.d(TAG, "Data item set: " + result.getDataItem().getUri());
-                }
-            }
-        });
     }
 }
 

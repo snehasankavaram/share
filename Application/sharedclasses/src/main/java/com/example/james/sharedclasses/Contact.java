@@ -43,9 +43,13 @@ public class Contact implements Serializable {
         return this.profile;
     }
 
+    public void setProfile (Profile profile) {this.profile = profile;}
+
     public String getNotes () {
         return this.notes;
     }
+
+    public void setNotes (String notes) {this.notes = notes;}
 
     public DataMap putToDataMap(DataMap map) {
         map.putDataMap("profile", this.profile.putToDataMap(new DataMap()));

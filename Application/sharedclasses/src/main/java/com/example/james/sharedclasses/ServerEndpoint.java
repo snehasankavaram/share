@@ -17,9 +17,12 @@ public interface ServerEndpoint {
     Call<GetUserRequestWrapper> createUser(@Body GetUserRequestWrapper user);
 
     @POST("/contacts/create")
-    Call<CreateContactRequest> createContact(@Body CreateContactRequest request);
+    Call<ContactProfileWrapper> createContact(@Body CreateContactRequest request);
 
     @GET("/contacts/index")
     Call<GetContactsRequestWrapper> getContactsForUser(@Query("username") String username);
+
+    @GET("/db_files/index")
+    Call<GetFilesRequestWrapper> getFilesForUser(@Query("username") String username);
 
 }
