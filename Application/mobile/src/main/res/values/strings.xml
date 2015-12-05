@@ -21,4 +21,10 @@
     <string name="title_activity_my_profile">MyProfileActivity</string>
     <string name="title_activity_my_files">MyFilesActivity</string>
     <string name="title_activity_signup">SignupActivity</string>
+
+    <!-- Backend website -->
+    <string name="WEBSITE_URL">http://share-backend.herokuapp.com/</string>
+
+    <!-- User data -->
+    <string name="USER_DATA">USER_DATA</string>
 </resources>

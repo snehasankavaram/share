@@ -1,6 +1,9 @@
 package com.share;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,8 +15,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.james.sharedclasses.Contact;
+import com.example.james.sharedclasses.ContactProfileWrapper;
 import com.example.james.sharedclasses.ContactsAdapter;
+import com.example.james.sharedclasses.GetContactsRequestWrapper;
 import com.example.james.sharedclasses.Profile;
+import com.example.james.sharedclasses.ServerEndpoint;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -31,29 +37,38 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.List;
 
-public class ContactsListActivity extends AppCompatActivity implements Observer {
+import retrofit.Call;
+import retrofit.GsonConverterFactory;
+import retrofit.Response;
+import retrofit.Retrofit;
+
+public class ContactsListActivity extends AppCompatActivity {
 
     private ContactsAdapter adapter;
     private GoogleApiClient mGoogleApiClient;
     private static final String CONTACTS_KEY = "com.example.key.contacts";
     private static final String TAG = "ContactsListActivity";
-    private Profile myProfile;
+    public static final String SHAREDPREF_FILE = "ContactsListActivity";
+    private Retrofit retrofit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
 
+        retrofit = new Retrofit.Builder()
+                .baseUrl(getString(R.string.WEBSITE_URL))
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
         Intent intent = new Intent(getApplicationContext(), MobileMessageService.class);
         startService(intent);
 
-        myProfile = (Profile) getIntent().getSerializableExtra("profile");
-
-        ArrayList <Contact> contactsList = getContacts();
+        ArrayList <Contact> contactsList = new ArrayList<>();
         adapter = new ContactsAdapter(this, contactsList);
 
         ListView listView = (ListView) findViewById(R.id.list);
@@ -76,10 +91,13 @@ public class ContactsListActivity extends AppCompatActivity implements Observer 
                 .addApi(Wearable.API)
                 .build();
         mGoogleApiClient.connect();
+    }
 
-//        sendContactsToWear(contactsList);
-//        sendMessage("/asdf", );
-
+    @Override
+    public void onStart() {
+        super.onStart();
+        LoadContactsTask t = new LoadContactsTask(adapter);
+        t.execute();
     }
 
     private void sendMessage( final String path, final String text ) {
@@ -96,15 +114,27 @@ public class ContactsListActivity extends AppCompatActivity implements Observer 
         }).start();
     }
 
-    public ArrayList<Contact>  getContacts() {
+    public ArrayList<Contact> getContacts() {
+        SharedPreferences mPrefs = getSharedPreferences(getString(R.string.USER_DATA), Context.MODE_PRIVATE);
+        String username = mPrefs.getString("username", "");
+        Log.d(TAG, "Got contacts for: " + username);
         ArrayList<Contact> contactsList = new ArrayList<>();
-        String [] names = {"Sally Smith", "Bob Jones", "Dylan Lee", "Carry George", "Jonas Thomson"};
-        String [] occupations = {"CEO of Tech, Inc.", "Engineer at Snapchat", "Entrepreneur", "Contractor", "Project Manager"};
-        String [] notes = {"Shows potential.", "I think I like this guy", "Seems legit, brief conversation at tech conference in May", "Met in startup fair, need to look at design documents", "Told him I will get back to him"};
-        for (int i = 0; i < names.length; i++) {
-            Profile p = new Profile(names[i], names[i]+"@gmail.com","136-234-1111", occupations[i]);
-            Contact c = new Contact(p, notes[i]);
-            contactsList.add(c);
+        ServerEndpoint service = retrofit.create(ServerEndpoint.class);
+        Call<GetContactsRequestWrapper> call = service.getContactsForUser(username);
+        try {
+            Response<GetContactsRequestWrapper> response = call.execute();
+            GetContactsRequestWrapper responseWrapper = response.body();
+            if (responseWrapper != null) {
+                List<ContactProfileWrapper> contactsWrapper =  responseWrapper.getContacts();
+                for (ContactProfileWrapper contactWrapper: contactsWrapper) {
+                    String notes = contactWrapper.getContact().getNotes();
+                    Profile p = contactWrapper.getProfile();
+                    contactsList.add(new Contact(p, notes));
+                }
+            }
+
+        } catch (IOException e) {
+
         }
         return contactsList;
     }
@@ -135,7 +165,6 @@ public class ContactsListActivity extends AppCompatActivity implements Observer 
                             case 0:
                                 Log.d("Hamburger", "Clicked profile");
                                 i = new Intent(getApplicationContext(), MyProfileActivity.class);
-                                i.putExtra("profile", myProfile);
                                 startActivity(i);
                                 break;
                             case 2:
@@ -175,11 +204,6 @@ public class ContactsListActivity extends AppCompatActivity implements Observer 
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void update(Observable observable, Object data) {
-        ListView listView = (ListView) findViewById(R.id.list);
-        ((ContactsAdapter) listView.getAdapter()).notifyDataSetChanged();
-    }
 
     private void sendContactsToWear(ArrayList<Contact> contacts) {
         PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/contacts");
@@ -199,5 +223,23 @@ public class ContactsListActivity extends AppCompatActivity implements Observer 
                 }
             }
         });
+    }
+
+    class LoadContactsTask extends AsyncTask<Void, Void, ArrayList<Contact>> {
+        private ContactsAdapter adapter;
+        public LoadContactsTask(ContactsAdapter adapter) {
+            this.adapter = adapter;
+        }
+
+        @Override
+        protected ArrayList<Contact> doInBackground(Void... params) {
+            return getContacts();
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Contact> contacts){
+            adapter.addAll(contacts);
+            adapter.notifyDataSetChanged();
+        }
     }
 }

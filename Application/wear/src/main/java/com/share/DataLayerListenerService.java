@@ -1,5 +1,6 @@
 package com.share;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -12,6 +13,10 @@ public class DataLayerListenerService extends WearableListenerService {
     private static final String TAG = "DataLayerListener";
     private GoogleApiClient mGoogleApiClient;
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_STICKY;
+    }
 
     @Override
     public void onCreate() {
@@ -30,6 +35,8 @@ public class DataLayerListenerService extends WearableListenerService {
                     }
                 })
                 .build();
+
+        mGoogleApiClient.connect();
     }
 
     @Override

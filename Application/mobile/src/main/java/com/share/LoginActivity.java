@@ -4,9 +4,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -32,6 +34,7 @@ import android.widget.Toast;
 import com.example.james.sharedclasses.GetUserRequestWrapper;
 import com.example.james.sharedclasses.Profile;
 import com.example.james.sharedclasses.ServerEndpoint;
+import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 
@@ -380,8 +383,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
             switch (success) {
                 case 0: {
+                    SharedPreferences mPrefs = getSharedPreferences(getString(R.string.USER_DATA), Context.MODE_PRIVATE);
+                    SharedPreferences.Editor ed=mPrefs.edit();
+                    Gson gson = new Gson();
+                    ed.putString("username", mUser);
+                    ed.putString("profile", gson.toJson(profile));
+                    ed.commit();
+
                     Intent i = new Intent(getBaseContext(), ContactsListActivity.class);
-                    i.putExtra("profile", profile);
                     startActivity(i);
                     break;
                 }
