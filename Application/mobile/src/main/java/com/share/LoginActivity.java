@@ -379,6 +379,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 }
                 if (u.getUser().getPassword().equals(mPassword)){
                     profile = u.getProfile();
+                    Log.d(TAG, profile.getName());
                     ArrayList<Contact> contacts = getContacts(u.getUser().getUsername());
                     LoginUtils.setContacts(getBaseContext(), contacts);
                     sendContactsToWear(contacts);
@@ -465,6 +466,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 for (ContactProfileWrapper contactWrapper: contactsWrapper) {
                     String notes = contactWrapper.getContact().getNotes();
                     Profile p = contactWrapper.getProfile();
+                    Log.d(TAG, p.getName());
                     contactsList.add(new Contact(p, notes));
                 }
             }
