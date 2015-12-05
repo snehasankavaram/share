@@ -25,10 +25,10 @@ public class ColorPickerActivity extends Activity {
                 ImageView i3 = (ImageView) findViewById(R.id.imageView3);
                 ImageView i4 = (ImageView) findViewById(R.id.imageView4);
 
-                i1.setBackgroundColor(Color.parseColor("#78A85C"));
-                i2.setBackgroundColor(Color.parseColor("#46806D"));
-                i3.setBackgroundColor(Color.parseColor("#C08669"));
-                i4.setBackgroundColor(Color.parseColor("#B06073"));
+//                i1.setBackgroundColor(Color.parseColor("#ff6666"));
+//                i2.setBackgroundColor(Color.parseColor("#b3fb6a"));
+//                i3.setBackgroundColor(Color.parseColor("#75b2f0"));
+//                i4.setBackgroundColor(Color.parseColor("#cf79ec"));
 
                 imageViews[0] = i1;
                 imageViews[1] = i2;
