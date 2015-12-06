@@ -31,9 +31,14 @@ public class File {
 
     }
 
-    public File (String link, String localPath) {
-        this.link = link;
-        this.localPath = localPath;
+    /**
+     * Used for mocking purposes
+     * @param fileName
+     * @param createdAt
+     */
+    public File (String fileName, String createdAt ) {
+        this.fileName = fileName;
+        this.createdAt = createdAt;
     }
     public String getLink() {
         return link;
