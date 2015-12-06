@@ -15,7 +15,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by Sneha on 11/19/15.
@@ -50,7 +54,15 @@ public class FilesAdapter extends ArrayAdapter<File>{
         }
         // Populate the data into the template view using the data object
         viewHolder.name.setText(file.getFileName());
-        viewHolder.createdAt.setText(file.getCreatedAt());
+        SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+        try{
+            Date date = isoFormat.parse(file.getCreatedAt());
+            SimpleDateFormat outputDateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+            viewHolder.createdAt.setText(outputDateFormat.format(date));
+        }
+        catch (ParseException e) {
+            viewHolder.createdAt.setText(file.getCreatedAt());
+        }
 
         int [] images = {R.drawable.file_icon, R.drawable.image_icon};
         int selected = images[file.getFileName().charAt(0) % 2];

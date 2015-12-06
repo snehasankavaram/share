@@ -30,9 +30,6 @@ import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 
 import java.util.ArrayList;
 
-import retrofit.GsonConverterFactory;
-import retrofit.Retrofit;
-
 public class ContactsListActivity extends AppCompatActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -40,7 +37,6 @@ public class ContactsListActivity extends AppCompatActivity implements
     private GoogleApiClient mGoogleApiClient;
     private static final String CONTACTS_KEY = "com.example.key.contacts";
     private static final String TAG = "ContactsListActivity";
-    private Retrofit retrofit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,12 +49,6 @@ public class ContactsListActivity extends AppCompatActivity implements
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         client.interceptors().add(interceptor);
-
-        retrofit = new Retrofit.Builder()
-                .baseUrl(getString(R.string.WEBSITE_URL))
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
 
         Intent intent = new Intent(getApplicationContext(), MobileMessageService.class);
         startService(intent);

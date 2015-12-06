@@ -2,6 +2,7 @@ package com.share;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -42,18 +43,6 @@ public class MyFilesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_files);
-
-        //TODO query for actual files
-//        ArrayList <File>fileList = new ArrayList<>();
-//        String [] namesList = {"Design Doc", "Resume", "Proposal", "Cover Letter", "Resume 1", "Resume 2"};
-//        String [] dateList = {"12/1/15", "11/30/15", "11/30/15", "11/29/15", "11/29/15", "11/29/15"};
-//        for (int i = 0; i < 6; i++) {
-//            fileList.add(new File(namesList[i], dateList[i]));
-//        }
-//        FilesAdapter adapter = new FilesAdapter(this, fileList);
-
-//        ListView listView = (ListView) findViewById(R.id.list);
-//        listView.setAdapter(adapter);
 
         PrimaryDrawerItem item1 = new PrimaryDrawerItem().withName("My profile");
         PrimaryDrawerItem item2 = new PrimaryDrawerItem().withName("My files");
@@ -100,6 +89,7 @@ public class MyFilesActivity extends AppCompatActivity {
         // Dropbox Stuff
         AndroidAuthSession session = buildSession();
         ListView listView = (ListView) findViewById(R.id.list);
+        listView.setBackgroundColor(Color.WHITE);
         mApi = new DropboxAPI<AndroidAuthSession>(session);
         dbAdapter = new DropboxFilesAdapter(getBaseContext(), new ArrayList<DropboxAPI.Entry>());
         listView.setAdapter(dbAdapter);

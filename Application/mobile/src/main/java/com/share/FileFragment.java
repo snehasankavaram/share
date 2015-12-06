@@ -21,17 +21,12 @@ public class FileFragment extends Fragment {
     private FilesAdapter adapter;
 
     @Override
+    @SuppressWarnings("unchecked")
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // TODO: query to get files here
-        fileList = new ArrayList<>();
-        String [] namesList = {"Design Doc", "Resume", "Proposal", "Cover Letter"};
-        String [] dateList = {"12/1/15", "11/30/15", "11/30/15", "11/29/15"};
-        for (int i = 0; i < 4; i++) {
-            fileList.add(new File(namesList[i], dateList[i]));
-        }
-
+        Bundle args = getArguments();
+        fileList = (ArrayList<File>) args.get("files");
     }
 
     @Override
