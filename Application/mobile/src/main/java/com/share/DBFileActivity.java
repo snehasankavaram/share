@@ -1,13 +1,10 @@
 package com.share;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -17,18 +14,10 @@ import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
 import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
-import com.example.james.sharedclasses.LoginUtils;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.logging.HttpLoggingInterceptor;
-
-import java.util.ArrayList;
-
-import retrofit.GsonConverterFactory;
-import retrofit.Retrofit;
 
 public class DBFileActivity extends Activity {
     private WebView webView;
-    private Retrofit retrofit;
+
     private final String TAG = "DBFileActivity";
     private static final String APP_KEY = "kqno6de35awdvp9";
     private static final String APP_SECRET = "s1subnpdhcm2fxu";
@@ -39,23 +28,10 @@ public class DBFileActivity extends Activity {
 
     DropboxAPI<AndroidAuthSession> mApi;
 
-    DropboxFilesAdapter dbAdapter;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dbfile);
-
-        OkHttpClient client = new OkHttpClient();
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        client.interceptors().add(interceptor);
-
-        retrofit = new Retrofit.Builder()
-                .baseUrl(getString(R.string.WEBSITE_URL))
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
 
         final String url = (String) getIntent().getSerializableExtra("url");
         final String localPath  = (String) getIntent().getSerializableExtra("local_path");
@@ -70,36 +46,17 @@ public class DBFileActivity extends Activity {
         // Dropbox Stuff
         AndroidAuthSession session = buildSession();
         mApi = new DropboxAPI<AndroidAuthSession>(session);
-        dbAdapter = new DropboxFilesAdapter(getBaseContext(), new ArrayList<DropboxAPI.Entry>());
         if (!mApi.getSession().isLinked()) {
             mApi.getSession().startOAuth2Authentication(DBFileActivity.this);
         }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(DBFileActivity.this);
-                builder.setMessage("Are you sure?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                final String username = LoginUtils.getLoginToken(getBaseContext());
-                                Log.d(TAG, "Username: " + username);
-                                CreateSharedLinkTask task = new CreateSharedLinkTask(retrofit, mApi, localPath, username, fileName, url);
-                                task.execute();
-
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // User cancelled the dialog
-                            }
-                        });
-                // Create the AlertDialog object and return it
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            }
-        });
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                dialog.show();
+//            }
+//        });
     }
 
     private class Callback extends WebViewClient {
