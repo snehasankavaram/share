@@ -3,6 +3,7 @@ package com.share;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -10,15 +11,25 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.cloudinary.Cloudinary;
+import com.example.james.sharedclasses.GetUserRequestWrapper;
+import com.example.james.sharedclasses.LoginUtils;
 import com.example.james.sharedclasses.Profile;
+import com.example.james.sharedclasses.ServerEndpoint;
+import com.example.james.sharedclasses.User;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.mikepenz.materialdrawer.Drawer;
@@ -27,7 +38,29 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+
+import butterknife.OnClick;
+import retrofit.Call;
+import retrofit.GsonConverterFactory;
+import retrofit.Response;
+import retrofit.Retrofit;
+
 public class MyProfileActivity extends AppCompatActivity {
+    private static final int RESULT_LOAD_IMG = 1;
+
+    private View.OnClickListener editListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            // Create intent to Open Image applications like Gallery, Google Photos
+            Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            // Start the Intent
+            startActivityForResult(galleryIntent, RESULT_LOAD_IMG);
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +79,8 @@ public class MyProfileActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.email)).setText(myProfile.getEmail());
 
         ((ImageView) findViewById(R.id.image)).setImageBitmap(getCroppedBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.face2)));
-
+        Button button = (Button)findViewById(R.id.edit);
+        button.setOnClickListener(editListener);
 
         PrimaryDrawerItem item1 = new PrimaryDrawerItem().withName("My profile");
         PrimaryDrawerItem item2 = new PrimaryDrawerItem().withName("My files");
@@ -91,6 +125,36 @@ public class MyProfileActivity extends AppCompatActivity {
                 .build();
     }
 
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            // When an Image is picked
+            if (requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK && null != data) {
+
+                Uri selectedImage = data.getData();
+                String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+                // Get the cursor
+                Cursor cursor = getContentResolver().query(selectedImage,
+                        filePathColumn, null, null, null);
+                // Move to first row
+                cursor.moveToFirst();
+
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                String imgDecodableString = cursor.getString(columnIndex);
+                cursor.close();
+                ImageView imgView = (ImageView) findViewById(R.id.image);
+                // Set the Image in ImageView after decoding the String
+                imgView.setImageBitmap(getCroppedBitmap(BitmapFactory.decodeFile(imgDecodableString)));
+                //InputStream i = BitmapFactory.decodeFile(imgDecodableString);
+                InputStream i = getContentResolver().openInputStream(data.getData());
+                this.upload(i, LoginUtils.getLoginToken(this.getApplicationContext()));
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "oops! try again", Toast.LENGTH_LONG).show();
+        }
+    }
+
     public Bitmap getCroppedBitmap(Bitmap bitmap) {
         Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
                 bitmap.getHeight(), Bitmap.Config.ARGB_8888);
@@ -112,6 +176,34 @@ public class MyProfileActivity extends AppCompatActivity {
         //return _bmp;
         return output;
     }
+
+    public static void upload(final InputStream inputStream, final String publicId) {
+
+        final Map<String, String> options = new HashMap<>();
+        options.put("public_id", publicId);
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                Map config = new HashMap();
+                config.put("cloud_name", "sneha-sankavaram");
+                config.put("api_key", "534326311652891");
+                config.put("api_secret", "8EzcaEKA8Fg7899KF5N_LCPArws");
+                Cloudinary cloudinary = new Cloudinary(config);
+
+                try {
+                    cloudinary.uploader().upload(inputStream, options);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        new Thread(runnable).start();
+    }
+
+
 
 
 }

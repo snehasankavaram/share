@@ -14,24 +14,35 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         android:elevation="4dp" />
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="5" >
+        android:layout_weight="4" >
+        <Button
+            android:layout_width="150dp"
+            android:layout_height="35dp"
+            android:layout_marginTop="10dp"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/edit"
+            android:text="edit photo"
+            android:textAlignment="center"
+            android:layout_below="@+id/image"
 
+            />
         <ImageView
             android:id="@+id/image"
             android:layout_centerInParent="true"
             android:layout_width="150dp"
             android:layout_height="150dp"
+            android:src="@color/md_blue_100"
             />
+
     </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="5"
+        android:layout_weight="6"
         android:orientation="vertical">
 
         <TextView xmlns:android="http://schemas.android.com/apk/res/android"
