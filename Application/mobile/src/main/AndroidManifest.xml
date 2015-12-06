@@ -74,7 +74,11 @@
         <activity
             android:name=".SignupActivity"
             android:label="@string/title_activity_signup"
-            android:theme="@style/Theme.AppCompat.Light"></activity>
+            android:theme="@style/Theme.AppCompat.Light" />
+        <activity
+            android:name=".TheirDropboxFileActivity"
+            android:label="@string/title_activity_their_dropbox_file"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
     </application>
 
 </manifest>

@@ -11,13 +11,13 @@ import java.util.List;
 /**
  * Created by james on 12/1/15.
  */
-public class LoadMyFiles extends AsyncTask<Void, Long, Boolean> {
+public class LoadMyFilesTask extends AsyncTask<Void, Long, Boolean> {
     private DropboxAPI<?> mApi;
     DropboxFilesAdapter adapter;
 
     List<DropboxAPI.Entry> files;
 
-    public LoadMyFiles(DropboxAPI<?> api, DropboxFilesAdapter dbAdapter) {
+    public LoadMyFilesTask(DropboxAPI<?> api, DropboxFilesAdapter dbAdapter) {
         mApi = api;
         adapter = dbAdapter;
     }

@@ -27,4 +27,5 @@
 
     <!-- User data -->
     <string name="USER_DATA">USER_DATA</string>
+    <string name="title_activity_their_dropbox_file">TheirDropboxFileActivity</string>
 </resources>
