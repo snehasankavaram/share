@@ -1,5 +1,6 @@
 package com.share;
 
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -125,6 +126,11 @@ public class MobileMessageService extends WearableListenerService implements Goo
                     Log.d(TAG, "Added contact: " + contactProfileWrapper.getContact().getProfile().getName());
                     contacts.add(c);
                     LoginUtils.setContacts(getBaseContext(), contacts);
+                    Intent intent = new Intent(getApplicationContext(), ContactPageActivity.class);
+                    intent.putExtra("contact", c);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+
                 } else {
                     int statusCode = response.code();
 
