@@ -374,6 +374,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     ArrayList<Contact> contacts = getContacts(u.getUser().getUsername());
                     LoginUtils.setContacts(getBaseContext(), contacts);
                     DataLayerUtil.sendContactsToWear(mGoogleApiClient, contacts, TAG);
+
+
                     return 0;
                 }
                 return 2;
@@ -391,13 +393,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 case 0: {
                     LoginUtils.setLoginToken(getBaseContext(), mUser);
                     LoginUtils.setProfile(getBaseContext(), profile);
-//                    SharedPreferences mPrefs = getSharedPreferences(getString(R.string.USER_DATA), Context.MODE_PRIVATE);
-//                    SharedPreferences.Editor ed = mPrefs.edit();
-//                    Gson gson = new Gson();
-//                    ed.putString("username", mUser);
-//                    ed.putString("profile", gson.toJson(profile));
-//                    ed.commit();
-
                     DataLayerUtil.sendUserDataToWear(mGoogleApiClient, mUser, profile, TAG);
                     Intent i = new Intent(getBaseContext(), ContactsListActivity.class);
                     startActivity(i);

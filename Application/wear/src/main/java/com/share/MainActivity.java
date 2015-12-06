@@ -55,6 +55,11 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        return mGestureDetector.onTouchEvent(ev) || super.onTouchEvent(ev);
+    }
+
     private class MainPagerAdapter extends FragmentPagerAdapter {
         private Fragment contacts;
         private Fragment connect;
@@ -100,33 +105,5 @@ public class MainActivity extends FragmentActivity {
             }
             return new Profile("asdf","ggg","3","asdf");
         }
-//        private void getSelf(final ProfileFragment fragment) {
-//            ServerEndpoint service = retrofit.create(ServerEndpoint.class);
-//            Call<GetUserRequestWrapper> call = service.getUser(LoginUtils.getLoginToken(MainActivity.this));
-//            Log.d(TAG, "get self called");
-//            call.enqueue(new Callback<GetUserRequestWrapper>() {
-//                @Override
-//                public void onResponse(Response<GetUserRequestWrapper> response, Retrofit retrofit) {
-//                    // response.isSuccess() is true if the response code is 2xx
-//                    Log.d(TAG, "Got response");
-//                    if (response.isSuccess()) {
-//                        GetUserRequestWrapper user = response.body();
-////                        Bundle args = new Bundle();
-////                        args.putSerializable("profile", user.getProfile());
-////                        Log.d(TAG, "Put profile in args");
-////                        fragment.setArguments(args);
-//                        fragment.onProfileAvailable(user.getProfile());
-//                    } else {
-//                        int statusCode = response.code();
-//                        // handle request errors yourself
-//                        ResponseBody errorBody = response.errorBody();
-//                    }
-//                }
-//                @Override
-//                public void onFailure(Throwable t) {
-//                    // handle execution failures like no internet connectivity
-//                }
-//            });
-//        }
     }
 }
