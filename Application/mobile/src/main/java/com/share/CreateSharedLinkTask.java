@@ -58,7 +58,7 @@ public class CreateSharedLinkTask extends AsyncTask<Void, Void, Boolean> {
                         Log.d(TAG, String.format("Error: %d with body: %s", statusCode, errorBody.string()));
                     }
                     catch (IOException e) {
-                        Log.d(TAG, String.format(e.toString()));
+                        Log.d(TAG, e.toString());
                     }
                 }
             } catch (IOException e) {

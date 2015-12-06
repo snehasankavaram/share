@@ -28,4 +28,7 @@ public interface ServerEndpoint {
     @POST("/db_files/create")
     Call<GetFilesRequestWrapper> createFileForUser(@Body CreateFileRequest request);
 
+    @POST("/db_files/update")
+    Call<GetFilesRequestWrapper> updateMetadataForFile(@Body UpdateFileMetadataRequest request);
+
 }
