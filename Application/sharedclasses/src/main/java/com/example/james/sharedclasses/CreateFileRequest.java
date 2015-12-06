@@ -19,14 +19,19 @@ public class CreateFileRequest {
     @Expose
     private String localPath;
 
+    @SerializedName("file_name")
+    @Expose
+    private String fileName;
+
     public CreateFileRequest() {
 
     }
 
-    public CreateFileRequest(String username, String link, String localPath) {
+    public CreateFileRequest(String username, String link, String localPath, String fileName) {
         this.username = username;
         this.link = link;
         this.localPath = localPath;
+        this.fileName = fileName;
     }
 
     public String getLocalPath() {
@@ -51,5 +56,13 @@ public class CreateFileRequest {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }

@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.ContactProfileWrapper;
+import com.example.james.sharedclasses.File;
 import com.example.james.sharedclasses.GetContactsRequestWrapper;
 import com.example.james.sharedclasses.GetUserRequestWrapper;
 import com.example.james.sharedclasses.LoginUtils;
@@ -62,8 +63,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
-
-    private static final String BASE_URL = "http://share-backend.herokuapp.com/";
 
     private static final String TAG = "LoginActivity";
 
@@ -435,13 +434,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 for (ContactProfileWrapper contactWrapper: contactsWrapper) {
                     String notes = contactWrapper.getContact().getNotes();
                     Profile p = contactWrapper.getProfile();
+                    ArrayList<File> files = contactWrapper.getFiles();
                     Log.d(TAG, p.getName());
-                    contactsList.add(new Contact(p, notes));
+                    for (File f : files) {
+                        Log.d(TAG, "Get contacts. Filename: " + f.getFileName());
+                    }
+
+                    contactsList.add(new Contact(p, notes, files));
                 }
             }
 
         } catch (IOException e) {
-
+            Log.d(TAG, e.toString());
         }
         return contactsList;
     }

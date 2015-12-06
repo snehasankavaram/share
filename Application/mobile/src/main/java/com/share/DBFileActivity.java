@@ -49,6 +49,7 @@ public class DBFileActivity extends Activity {
 
         final String url = (String) getIntent().getSerializableExtra("url");
         final String localPath  = (String) getIntent().getSerializableExtra("local_path");
+        final String fileName = (String) getIntent().getSerializableExtra("file_name");
         webView = (WebView) findViewById(R.id.webView);
         webView.setWebViewClient(new Callback());
         webView.getSettings().setJavaScriptEnabled(true);
@@ -67,7 +68,7 @@ public class DBFileActivity extends Activity {
                                 ServerEndpoint service = retrofit.create(ServerEndpoint.class);
                                 final String username = LoginUtils.getLoginToken(getBaseContext());
                                 Log.d(TAG, "Username: "+ username);
-                                Call<GetFilesRequestWrapper> call = service.createFileForUser(new CreateFileRequest(username, url, localPath));
+                                Call<GetFilesRequestWrapper> call = service.createFileForUser(new CreateFileRequest(username, url, localPath, fileName));
                                 call.enqueue(new retrofit.Callback<GetFilesRequestWrapper>() {
                                     @Override
                                     public void onResponse(Response<GetFilesRequestWrapper> response, Retrofit retrofit) {
