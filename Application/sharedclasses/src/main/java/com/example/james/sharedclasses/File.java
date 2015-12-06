@@ -1,22 +1,62 @@
 package com.example.james.sharedclasses;
 
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by Sneha on 11/19/15.
  */
 public class File {
-    private String createdAt;
-
+    @SerializedName("link")
+    @Expose
     private String link;
-    //TODO: Sneha- add filename to backend
-    private String name;
+    @SerializedName("view_count")
+    @Expose
     private int viewCount;
 
-    //more fields for metadata when added to backend
+    @SerializedName("local_path")
+    @Expose
+    private String localPath;
 
-    public File (String name, String createdAt) {
-        this.name = name;
-        this.createdAt = createdAt;
+    @SerializedName("created_at")
+    @Expose
+    private String createdAt;
+
+    @SerializedName("file_name")
+    @Expose
+    private String fileName;
+
+    public File() {
+
+    }
+
+    public File (String link, String localPath) {
+        this.link = link;
+        this.localPath = localPath;
+    }
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public int getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(int viewCount) {
+        this.viewCount = viewCount;
+    }
+
+    public String getLocalPath() {
+        return localPath;
+    }
+
+    public void setLocalPath(String localPath) {
+        this.localPath = localPath;
     }
 
     public String getCreatedAt() {
@@ -27,28 +67,12 @@ public class File {
         this.createdAt = createdAt;
     }
 
-    public String getLink() {
-        return link;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setLink(String link) {
-        this.link = link;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getViewCount() {
-        return viewCount;
-    }
-
-    public void setViewCount(int viewCount) {
-        this.viewCount = viewCount;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
 

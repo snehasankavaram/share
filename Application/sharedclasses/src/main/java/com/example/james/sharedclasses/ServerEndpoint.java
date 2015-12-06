@@ -25,4 +25,7 @@ public interface ServerEndpoint {
     @GET("/db_files/index")
     Call<GetFilesRequestWrapper> getFilesForUser(@Query("username") String username);
 
+    @POST("/db_files/create")
+    Call<GetFilesRequestWrapper> createFileForUser(@Body CreateFileRequest request);
+
 }

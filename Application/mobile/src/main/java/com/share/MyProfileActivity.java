@@ -1,8 +1,6 @@
 package com.share;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -18,9 +16,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.james.sharedclasses.LoginUtils;
 import com.example.james.sharedclasses.Profile;
-import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -34,13 +31,14 @@ public class MyProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_profile);
 
-        SharedPreferences mPrefs = getSharedPreferences(getString(R.string.USER_DATA), Context.MODE_PRIVATE);
-        Gson gson = new Gson();
-        JsonParser parser=new JsonParser();
-
-        Profile myProfile = gson.fromJson(parser.parse(mPrefs.getString("profile", "")).getAsJsonObject(), Profile.class);
+//        SharedPreferences mPrefs = getSharedPreferences(getString(R.string.USER_DATA), Context.MODE_PRIVATE);
+//        Gson gson = new Gson();
+//        JsonParser parser=new JsonParser();
+//
+//        Profile myProfile = gson.fromJson(parser.parse(mPrefs.getString("profile", "")).getAsJsonObject(), Profile.class);
+        Profile myProfile = LoginUtils.getProfile(this);
         // Set our profile information.
-        ((TextView) findViewById(R.id.name)).setText(myProfile.getName());
+                ((TextView) findViewById(R.id.name)).setText(myProfile.getName());
         ((TextView) findViewById(R.id.occupation)).setText(myProfile.getOccupation());
         ((TextView) findViewById(R.id.phone)).setText(myProfile.getPhone());
         ((TextView) findViewById(R.id.email)).setText(myProfile.getEmail());

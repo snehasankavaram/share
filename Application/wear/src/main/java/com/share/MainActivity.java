@@ -14,28 +14,18 @@ import android.view.MotionEvent;
 import com.example.james.sharedclasses.LoginUtils;
 import com.example.james.sharedclasses.Profile;
 
-import retrofit.GsonConverterFactory;
-import retrofit.Retrofit;
-
 public class MainActivity extends FragmentActivity {
     private static final int NUM_PAGES = 3;
     private MyViewPager mPager;
     private PagerAdapter mPagerAdapter;
     private DismissOverlayView mDismissOverlayView;
     private GestureDetector mGestureDetector;
-    private Retrofit retrofit;
     private final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        retrofit = new Retrofit.Builder()
-                .baseUrl(getString(R.string.WEBSITE_URL))
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
 
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {

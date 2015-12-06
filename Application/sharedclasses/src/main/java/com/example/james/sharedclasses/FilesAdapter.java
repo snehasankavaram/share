@@ -49,11 +49,11 @@ public class FilesAdapter extends ArrayAdapter<File>{
             viewHolder = (ViewHolder) convertView.getTag();
         }
         // Populate the data into the template view using the data object
-        viewHolder.name.setText(file.getName());
+        viewHolder.name.setText(file.getFileName());
         viewHolder.createdAt.setText(file.getCreatedAt());
 
         int [] images = {R.drawable.file_icon, R.drawable.image_icon};
-        int selected = images[file.getName().charAt(0) % 2];
+        int selected = images[file.getFileName().charAt(0) % 2];
 
         viewHolder.image.setImageBitmap(BitmapFactory.decodeResource(parent.getResources(), selected));
         // Return the completed view to render on screen

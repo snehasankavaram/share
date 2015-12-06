@@ -1,7 +1,5 @@
 package com.share;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -109,8 +107,9 @@ public class MobileMessageService extends WearableListenerService implements Goo
 
     private void addContact () {
         ServerEndpoint service = retrofit.create(ServerEndpoint.class);
-        SharedPreferences mPrefs = getSharedPreferences(getString(R.string.USER_DATA), Context.MODE_PRIVATE);
-        String username = mPrefs.getString("username", "");
+//        SharedPreferences mPrefs = getSharedPreferences(getString(R.string.USER_DATA), Context.MODE_PRIVATE);
+//        String username = mPrefs.getString("username", "");
+        String username = LoginUtils.getLoginToken(this);
         Call<ContactProfileWrapper> call = service.createContact(new CreateContactRequest(username, "fdsa"));
         call.enqueue(new Callback<ContactProfileWrapper>() {
             @Override

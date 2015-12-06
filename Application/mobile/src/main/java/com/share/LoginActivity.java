@@ -4,11 +4,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
-import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -41,7 +39,6 @@ import com.example.james.sharedclasses.Profile;
 import com.example.james.sharedclasses.ServerEndpoint;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.Wearable;
-import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 
@@ -392,12 +389,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
             switch (success) {
                 case 0: {
-                    SharedPreferences mPrefs = getSharedPreferences(getString(R.string.USER_DATA), Context.MODE_PRIVATE);
-                    SharedPreferences.Editor ed = mPrefs.edit();
-                    Gson gson = new Gson();
-                    ed.putString("username", mUser);
-                    ed.putString("profile", gson.toJson(profile));
-                    ed.commit();
+                    LoginUtils.setLoginToken(getBaseContext(), mUser);
+                    LoginUtils.setProfile(getBaseContext(), profile);
+//                    SharedPreferences mPrefs = getSharedPreferences(getString(R.string.USER_DATA), Context.MODE_PRIVATE);
+//                    SharedPreferences.Editor ed = mPrefs.edit();
+//                    Gson gson = new Gson();
+//                    ed.putString("username", mUser);
+//                    ed.putString("profile", gson.toJson(profile));
+//                    ed.commit();
 
                     DataLayerUtil.sendUserDataToWear(mGoogleApiClient, mUser, profile, TAG);
                     Intent i = new Intent(getBaseContext(), ContactsListActivity.class);
