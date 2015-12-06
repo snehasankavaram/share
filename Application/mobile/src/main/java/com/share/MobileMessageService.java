@@ -1,7 +1,6 @@
 package com.share;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +9,7 @@ import android.util.Log;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.example.james.sharedclasses.Contact;
+import com.example.james.sharedclasses.ContactProfileWrapper;
 import com.example.james.sharedclasses.CreateContactRequest;
 import com.example.james.sharedclasses.LoginUtils;
 import com.example.james.sharedclasses.ServerEndpoint;
@@ -19,8 +19,11 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
+import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.ResponseBody;
+import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
@@ -56,9 +59,14 @@ public class MobileMessageService extends WearableListenerService implements Goo
                 .build();
         mGoogleApiClient.connect();
 
+        OkHttpClient client = new OkHttpClient();
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        client.interceptors().add(interceptor);
         retrofit = new Retrofit.Builder()
                 .baseUrl(getString(R.string.WEBSITE_URL))
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
                 .build();
 
         queue = Volley.newRequestQueue(this);
@@ -100,22 +108,41 @@ public class MobileMessageService extends WearableListenerService implements Goo
 
     private void addContact () {
         ServerEndpoint service = retrofit.create(ServerEndpoint.class);
-        SharedPreferences mPrefs = getSharedPreferences(getString(R.string.USER_DATA), Context.MODE_PRIVATE);
-        String username = mPrefs.getString("username", "");
-        Call<CreateContactRequest> call = service.createContact(new CreateContactRequest(username, "fdsa"));
-        call.enqueue(new Callback<CreateContactRequest>() {
+//        SharedPreferences mPrefs = getSharedPreferences(getString(R.string.USER_DATA), Context.MODE_PRIVATE);
+//        String username = mPrefs.getString("username", "");
+        String username = LoginUtils.getLoginToken(this);
+        Call<ContactProfileWrapper> call = service.createContact(new CreateContactRequest(username, "fdsa"));
+        call.enqueue(new Callback<ContactProfileWrapper>() {
             @Override
-            public void onResponse(retrofit.Response<CreateContactRequest> response, Retrofit retrofit) {
+            public void onResponse(retrofit.Response<ContactProfileWrapper> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
                     Log.d(TAG, "Successfully added contact");
+                    ContactProfileWrapper contactProfileWrapper = response.body();
+
                     ArrayList<Contact> contacts = LoginUtils.getContacts(getBaseContext());
-//                    contacts.add()
+                    Contact c = contactProfileWrapper.getContact();
+                    c.setProfile(contactProfileWrapper.getProfile());
+
+                    Log.d(TAG, "Added contact: " + contactProfileWrapper.getContact().getProfile().getName());
+                    contacts.add(c);
+                    LoginUtils.setContacts(getBaseContext(), contacts);
+                    Intent intent = new Intent(getApplicationContext(), ContactPageActivity.class);
+                    intent.putExtra("contact", c);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+
                 } else {
                     int statusCode = response.code();
 
                     // handle request errors yourself
                     ResponseBody errorBody = response.errorBody();
-                    Log.d(TAG, String.format("Error: %d with body: %s", statusCode, errorBody.toString()));
+                    try {
+                        Log.d(TAG, String.format("Error: %d with body: %s", statusCode, errorBody.string()));
+                    }
+                    catch (IOException e) {
+                        Log.d(TAG, String.format(e.toString()));
+                    }
+
                 }
             }
 

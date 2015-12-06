@@ -42,6 +42,8 @@ public class OpenDropboxFile extends AsyncTask<Void, Long, Boolean>{
             Log.d("Loading DB file", "on new activity");
             Intent i = new Intent(context, DBFileActivity.class);
             i.putExtra("url", link.url);
+            i.putExtra("local_path", entry.path);
+            i.putExtra("file_name", entry.fileName());
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.getApplicationContext().startActivity(i);
         }

@@ -4,11 +4,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
-import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -34,20 +32,14 @@ import android.widget.Toast;
 
 import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.ContactProfileWrapper;
+import com.example.james.sharedclasses.File;
 import com.example.james.sharedclasses.GetContactsRequestWrapper;
 import com.example.james.sharedclasses.GetUserRequestWrapper;
 import com.example.james.sharedclasses.LoginUtils;
 import com.example.james.sharedclasses.Profile;
 import com.example.james.sharedclasses.ServerEndpoint;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.wearable.DataApi;
-import com.google.android.gms.wearable.DataMap;
-import com.google.android.gms.wearable.PutDataMapRequest;
-import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
-import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 
@@ -71,8 +63,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
-
-    private static final String BASE_URL = "http://share-backend.herokuapp.com/";
 
     private static final String TAG = "LoginActivity";
 
@@ -379,9 +369,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 }
                 if (u.getUser().getPassword().equals(mPassword)){
                     profile = u.getProfile();
+                    Log.d(TAG, profile.getName());
                     ArrayList<Contact> contacts = getContacts(u.getUser().getUsername());
                     LoginUtils.setContacts(getBaseContext(), contacts);
-                    sendContactsToWear(contacts);
+                    DataLayerUtil.sendContactsToWear(mGoogleApiClient, contacts, TAG);
+
+
                     return 0;
                 }
                 return 2;
@@ -397,14 +390,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
             switch (success) {
                 case 0: {
-                    SharedPreferences mPrefs = getSharedPreferences(getString(R.string.USER_DATA), Context.MODE_PRIVATE);
-                    SharedPreferences.Editor ed = mPrefs.edit();
-                    Gson gson = new Gson();
-                    ed.putString("username", mUser);
-                    ed.putString("profile", gson.toJson(profile));
-                    ed.commit();
-
-                    sendDataToWear(mUser, profile);
+                    LoginUtils.setLoginToken(getBaseContext(), mUser);
+                    LoginUtils.setProfile(getBaseContext(), profile);
+                    DataLayerUtil.sendUserDataToWear(mGoogleApiClient, mUser, profile, TAG);
                     Intent i = new Intent(getBaseContext(), ContactsListActivity.class);
                     startActivity(i);
                     break;
@@ -434,25 +422,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
-    private void sendDataToWear(String username, Profile profile) {
-
-        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/username");
-
-        putDataMapReq.getDataMap().putString("username", username);
-        putDataMapReq.getDataMap().putDataMap("profile", profile.putToDataMap(new DataMap()));
-        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
-        PendingResult<DataApi.DataItemResult> pendingResult =
-                Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
-        pendingResult.setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
-            @Override
-            public void onResult(final DataApi.DataItemResult result) {
-                if(result.getStatus().isSuccess()) {
-                    Log.d(TAG, "Data item set: " + result.getDataItem().getUri());
-                }
-            }
-        });
-    }
-
     public ArrayList<Contact> getContacts(String username) {
         ArrayList<Contact> contactsList = new ArrayList<>();
         ServerEndpoint service = retrofit.create(ServerEndpoint.class);
@@ -465,34 +434,20 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 for (ContactProfileWrapper contactWrapper: contactsWrapper) {
                     String notes = contactWrapper.getContact().getNotes();
                     Profile p = contactWrapper.getProfile();
-                    contactsList.add(new Contact(p, notes));
+                    ArrayList<File> files = contactWrapper.getFiles();
+                    Log.d(TAG, p.getName());
+                    for (File f : files) {
+                        Log.d(TAG, "Get contacts. Filename: " + f.getFileName());
+                    }
+
+                    contactsList.add(new Contact(p, notes, files));
                 }
             }
 
         } catch (IOException e) {
-
+            Log.d(TAG, e.toString());
         }
         return contactsList;
-    }
-
-    private void sendContactsToWear(ArrayList<Contact> contacts) {
-        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/contacts");
-        ArrayList<DataMap> contactsAsDataMaps = new ArrayList<>();
-        for (Contact c : contacts) {
-            contactsAsDataMaps.add(c.putToDataMap(new DataMap()));
-        }
-        putDataMapReq.getDataMap().putDataMapArrayList("contacts", contactsAsDataMaps);
-        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
-        PendingResult<DataApi.DataItemResult> pendingResult =
-                Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
-        pendingResult.setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
-            @Override
-            public void onResult(final DataApi.DataItemResult result) {
-                if(result.getStatus().isSuccess()) {
-                    Log.d(TAG, "Data item set: " + result.getDataItem().getUri());
-                }
-            }
-        });
     }
 }
 

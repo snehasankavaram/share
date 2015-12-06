@@ -1,6 +1,7 @@
 package com.share;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -29,32 +30,25 @@ import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 
 import java.util.ArrayList;
 
-import retrofit.GsonConverterFactory;
-import retrofit.Retrofit;
-
-public class ContactsListActivity extends AppCompatActivity {
+public class ContactsListActivity extends AppCompatActivity implements
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     private ContactsAdapter adapter;
     private GoogleApiClient mGoogleApiClient;
     private static final String CONTACTS_KEY = "com.example.key.contacts";
     private static final String TAG = "ContactsListActivity";
-    private Retrofit retrofit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
+        SharedPreferences sPref = LoginUtils.getSharedPreferences(this);
+        sPref.registerOnSharedPreferenceChangeListener(this);
 
         OkHttpClient client = new OkHttpClient();
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         client.interceptors().add(interceptor);
-
-        retrofit = new Retrofit.Builder()
-                .baseUrl(getString(R.string.WEBSITE_URL))
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
 
         Intent intent = new Intent(getApplicationContext(), MobileMessageService.class);
         startService(intent);
@@ -169,5 +163,18 @@ public class ContactsListActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Log.d(TAG, "on shared pref called on key: " + key);
+        if (key.equals(LoginUtils.CONTACTS_KEY)) {
+            ArrayList<Contact> contacts = LoginUtils.getContacts(this);
+            adapter.clear();
+            adapter.addAll(contacts);
+            adapter.notifyDataSetChanged();
+            DataLayerUtil.sendContactsToWear(mGoogleApiClient, contacts, TAG);
+        }
+
     }
 }

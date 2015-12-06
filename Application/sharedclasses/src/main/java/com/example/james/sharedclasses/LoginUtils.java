@@ -17,8 +17,11 @@ public class LoginUtils {
     private static final String PREFS_NAME = "login.prefs";
     private static final String LOGIN_KEY = "username";
     private static final String PROFILE_KEY = "profile";
-    private static final String CONTACTS_KEY = "contacts";
+    public static final String CONTACTS_KEY = "contacts";
 
+    public static SharedPreferences getSharedPreferences(Context context) {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+    }
 
     public static void setLoginToken(Context context, String token) {
         setToken(context, LOGIN_KEY, token);

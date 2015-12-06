@@ -1,8 +1,6 @@
 package com.share;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,7 +10,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -25,13 +22,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cloudinary.Cloudinary;
-import com.example.james.sharedclasses.GetUserRequestWrapper;
 import com.example.james.sharedclasses.LoginUtils;
 import com.example.james.sharedclasses.Profile;
-import com.example.james.sharedclasses.ServerEndpoint;
-import com.example.james.sharedclasses.User;
-import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -42,12 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-
-import butterknife.OnClick;
-import retrofit.Call;
-import retrofit.GsonConverterFactory;
-import retrofit.Response;
-import retrofit.Retrofit;
 
 public class MyProfileActivity extends AppCompatActivity {
     private static final int RESULT_LOAD_IMG = 1;
@@ -67,13 +53,14 @@ public class MyProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_profile);
 
-        SharedPreferences mPrefs = getSharedPreferences(getString(R.string.USER_DATA), Context.MODE_PRIVATE);
-        Gson gson = new Gson();
-        JsonParser parser=new JsonParser();
-
-        Profile myProfile = gson.fromJson(parser.parse(mPrefs.getString("profile", "")).getAsJsonObject(), Profile.class);
+//        SharedPreferences mPrefs = getSharedPreferences(getString(R.string.USER_DATA), Context.MODE_PRIVATE);
+//        Gson gson = new Gson();
+//        JsonParser parser=new JsonParser();
+//
+//        Profile myProfile = gson.fromJson(parser.parse(mPrefs.getString("profile", "")).getAsJsonObject(), Profile.class);
+        Profile myProfile = LoginUtils.getProfile(this);
         // Set our profile information.
-        ((TextView) findViewById(R.id.name)).setText(myProfile.getName());
+                ((TextView) findViewById(R.id.name)).setText(myProfile.getName());
         ((TextView) findViewById(R.id.occupation)).setText(myProfile.getOccupation());
         ((TextView) findViewById(R.id.phone)).setText(myProfile.getPhone());
         ((TextView) findViewById(R.id.email)).setText(myProfile.getEmail());

@@ -11,7 +11,8 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:theme="@style/Theme.AppCompat.Light">
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
@@ -54,7 +55,7 @@
         <activity
             android:name=".DBFileActivity"
             android:label="@string/title_activity_dbfile"
-            android:theme="@style/MaterialDrawerTheme.Light.DarkToolbar.TranslucentStatus" />
+            android:theme="@style/Theme.AppCompat.Light" />
         <activity
             android:name="com.dropbox.client2.android.AuthActivity"
             android:configChanges="orientation|keyboard"

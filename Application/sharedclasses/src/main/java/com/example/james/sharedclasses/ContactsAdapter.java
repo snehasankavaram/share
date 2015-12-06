@@ -26,9 +26,11 @@ public class ContactsAdapter extends ArrayAdapter<Contact>{
         TextView occupation;
         ImageView image;
     }
+    public ArrayList<Contact> contacts;
 
     public ContactsAdapter(Context context, ArrayList<Contact> contacts) {
         super(context, R.layout.contact_item, contacts);
+        this.contacts = contacts;
     }
 
     @Override
