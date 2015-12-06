@@ -1,22 +1,33 @@
 package com.share;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
 import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
+import com.example.james.sharedclasses.FileMetadataWrapper;
+import com.example.james.sharedclasses.LoginUtils;
+
+import java.util.ArrayList;
 
 public class DBFileActivity extends Activity {
     private WebView webView;
+    private AlertDialog dialog;
 
     private final String TAG = "DBFileActivity";
     private static final String APP_KEY = "kqno6de35awdvp9";
@@ -51,12 +62,39 @@ public class DBFileActivity extends Activity {
         }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                dialog.show();
-//            }
-//        });
+        AlertDialog.Builder builder = new AlertDialog.Builder(DBFileActivity.this);
+        builder.setNegativeButton("okay", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.alert_dialog, null);
+
+        ListView listView = (ListView) dialogView.findViewById(R.id.listView);
+        TextView textView = (TextView) dialogView.findViewById(R.id.textView);
+        ArrayList<FileMetadataWrapper> filesMetadata = LoginUtils.getFileMetadata(this);
+        fab.setVisibility(View.INVISIBLE);
+        for (FileMetadataWrapper fileMetadata : filesMetadata) {
+            String currLocalPath = fileMetadata.getFile().getLocalPath();
+            String currFileName = fileMetadata.getFile().getFileName();
+            if (currLocalPath.equals(localPath) && currFileName.equals(fileName)) {
+                MetadataAdapter adapter = new MetadataAdapter(this, fileMetadata.getMetadata());
+                listView.setAdapter(adapter);
+                textView.setText(String.format("View count: %d", fileMetadata.getFile().getViewCount()));
+                fab.setVisibility(View.VISIBLE);
+                break;
+            }
+        }
+        builder.setView(dialogView);
+        dialog = builder.create();
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.show();
+            }
+        });
     }
 
     private class Callback extends WebViewClient {

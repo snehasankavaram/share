@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.dropbox.client2.DropboxAPI;
@@ -79,14 +78,14 @@ public class DropboxFilesAdapter extends ArrayAdapter<DropboxAPI.Entry> {
 
     private AlertDialog createDialog(final DropboxAPI.Entry entry) {
         android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(context);
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        View dialogView = inflater.inflate(R.layout.alert_dialog, null);
+//        LayoutInflater inflater = LayoutInflater.from(getContext());
+//        View dialogView = inflater.inflate(R.layout.alert_dialog, null);
+//
+//        ListView listView = (ListView) dialogView.findViewById(R.id.listView);
+//        TextView textView = (TextView) dialogView.findViewById(R.id.textView);
+//        builder.setView(dialogView);
 
-        ListView listView = (ListView) dialogView.findViewById(R.id.listView);
-        TextView textView = (TextView) dialogView.findViewById(R.id.textView);
-        builder.setView(dialogView);
-
-        builder.setMessage("Are you sure?")
+        builder.setMessage("Do you want to share this file with others?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         final String username = LoginUtils.getLoginToken(getContext());

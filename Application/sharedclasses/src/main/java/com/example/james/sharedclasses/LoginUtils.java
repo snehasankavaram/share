@@ -18,6 +18,7 @@ public class LoginUtils {
     private static final String LOGIN_KEY = "username";
     private static final String PROFILE_KEY = "profile";
     public static final String CONTACTS_KEY = "contacts";
+    private static final String FILE_METADATA_KEY = "FILE_METADATA";
 
     public static SharedPreferences getSharedPreferences(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -60,6 +61,22 @@ public class LoginUtils {
             Type type = new TypeToken<ArrayList<Contact>>(){}.getType();
             Gson gson = new Gson();
             return gson.fromJson(stringContacts, type);
+        }
+        return new ArrayList<>();
+    }
+
+    public static void setFileMetadata(Context context, ArrayList<FileMetadataWrapper> fileMetadata) {
+        Gson gson = new Gson();
+        setToken(context, FILE_METADATA_KEY, gson.toJson(fileMetadata));
+    }
+
+    public static ArrayList<FileMetadataWrapper> getFileMetadata(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        String stringFileMetadata = prefs.getString(FILE_METADATA_KEY, null);
+        if (stringFileMetadata != null) {
+            Type type = new TypeToken<ArrayList<FileMetadataWrapper>>(){}.getType();
+            Gson gson = new Gson();
+            return gson.fromJson(stringFileMetadata, type);
         }
         return new ArrayList<>();
     }
