@@ -1,10 +1,12 @@
 package com.share;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.james.sharedclasses.File;
@@ -39,6 +41,16 @@ public class FileFragment extends Fragment {
         adapter = new FilesAdapter(getContext(), fileList);
 
         ListView listView = (ListView) rootView.findViewById(R.id.list);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapter, View v, int position,
+                                    long arg3) {
+                File file = (File) adapter.getItemAtPosition(position);
+                Intent i = new Intent(getActivity(), TheirDropboxFileActivity.class);
+                i.putExtra("file", file);
+                startActivity(i);
+            }
+        });
         listView.setAdapter(adapter);
 
 

@@ -33,8 +33,6 @@ public class MyFilesActivity extends AppCompatActivity {
     private static final String ACCESS_KEY_NAME = "ACCESS_KEY";
     private static final String ACCESS_SECRET_NAME = "ACCESS_SECRET";
 
-    private static final boolean USE_OAUTH1 = false;
-
     DropboxAPI<AndroidAuthSession> mApi;
 
     DropboxFilesAdapter dbAdapter;
@@ -97,7 +95,7 @@ public class MyFilesActivity extends AppCompatActivity {
             mApi.getSession().startOAuth2Authentication(MyFilesActivity.this);
         }
         else{
-            LoadMyFiles t = new LoadMyFiles(mApi, dbAdapter);
+            LoadMyFilesTask t = new LoadMyFilesTask(mApi, dbAdapter);
             t.execute();
         }
 
@@ -126,7 +124,7 @@ public class MyFilesActivity extends AppCompatActivity {
 
                 // Store it locally in our app for later use
                 storeAuth(session);
-                LoadMyFiles t = new LoadMyFiles(mApi, dbAdapter);
+                LoadMyFilesTask t = new LoadMyFilesTask(mApi, dbAdapter);
                 t.execute();
             } catch (IllegalStateException e) {
                 showToast("Couldn't authenticate with Dropbox:" + e.getLocalizedMessage());
