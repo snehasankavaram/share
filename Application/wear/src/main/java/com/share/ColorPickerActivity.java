@@ -3,7 +3,6 @@ package com.share;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.wearable.view.WatchViewStub;
@@ -35,7 +34,7 @@ public class ColorPickerActivity extends Activity {
 
         Context context = getApplicationContext();
         CharSequence text = "select a color";
-        int duration = Toast.LENGTH_LONG;
+        int duration = Toast.LENGTH_SHORT;
 
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
