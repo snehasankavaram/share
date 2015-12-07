@@ -44,7 +44,7 @@ public class ProfileFragment extends Fragment implements RetrieveMyProfileTaskLi
 
         Bundle args = getArguments();
         if (args != null) {
-            Profile p = (Profile) args.get("profile");
+            p = (Profile) args.get("profile");
             if (p != null) {
                 name.setText(p.getName());
                 phone.setText("(925)-351-1211");
@@ -53,9 +53,17 @@ public class ProfileFragment extends Fragment implements RetrieveMyProfileTaskLi
         }
 
         //query for profile picture (using id) here
-        int [] images = {R.drawable.face1, R.drawable.face2, R.drawable.face3, R.drawable.face4};
+        int [] images = {R.drawable.face1, R.drawable.ben_bodien, R.drawable.face3, R.drawable.laura_lee};
 
         int selected = images[name.getText().charAt(0) % 4];
+
+        if (p != null && p.getName() != null) {
+            String uri = String.format("@drawable/%s",p.getName().replace(" ", "_").toLowerCase());
+            int imageResource = getActivity().getResources().getIdentifier(uri, null, this.getActivity().getPackageName());
+            if (imageResource != 0) {
+                selected = imageResource;
+            }
+        }
 
         ((ImageView) view.findViewById(R.id.imageView)).setImageBitmap(getCroppedBitmap(BitmapFactory.decodeResource(getResources(), selected)));
         return view;

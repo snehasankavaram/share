@@ -65,9 +65,13 @@ public class MyProfileActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.phone)).setText(myProfile.getPhone());
         ((TextView) findViewById(R.id.email)).setText(myProfile.getEmail());
 
-        ((ImageView) findViewById(R.id.image)).setImageBitmap(getCroppedBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.face2)));
-        Button button = (Button)findViewById(R.id.edit);
-        button.setOnClickListener(editListener);
+        String uri = String.format("@drawable/%s",myProfile.getName().replace(" ", "_").toLowerCase());
+        int imageResource = this.getResources().getIdentifier(uri, null, this.getPackageName());
+        if (imageResource == 0) {
+            imageResource = R.drawable.face2;
+        }
+        ((ImageView) findViewById(R.id.image)).setImageBitmap(getCroppedBitmap(BitmapFactory.decodeResource(getResources(), imageResource)));
+
 
         PrimaryDrawerItem item1 = new PrimaryDrawerItem().withName("Profile");
         PrimaryDrawerItem item2 = new PrimaryDrawerItem().withName("Files");

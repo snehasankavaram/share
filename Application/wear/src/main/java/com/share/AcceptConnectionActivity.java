@@ -81,7 +81,7 @@ public class AcceptConnectionActivity extends Activity {
                         .setSmallIcon(R.drawable.logo)
                         .setContentText("New connection from Brenda Jones")
                         .setContentIntent(viewPendingIntent)
-                        .addAction(R.drawable.face4,
+                        .addAction(R.drawable.laura_lee,
                                 "Accept contact", openContacts);
 
         // Get an instance of the NotificationManager service
