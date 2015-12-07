@@ -115,6 +115,7 @@ public class DataLayerListenerService extends WearableListenerService {
                             fireNotifications(wrapper);
                         }
                     }
+                    LoginUtils.setFileMetadata(this, filesMetadata);
                 }
             } else if (event.getType() == DataEvent.TYPE_DELETED) {
                 // DataItem deleted

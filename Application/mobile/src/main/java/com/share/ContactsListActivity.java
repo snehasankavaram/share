@@ -51,8 +51,10 @@ public class ContactsListActivity extends AppCompatActivity implements
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         client.interceptors().add(interceptor);
 
-        Intent intent = new Intent(getApplicationContext(), MobileMessageService.class);
-        startService(intent);
+        Intent messagesServiceIntent = new Intent(getApplicationContext(), MobileMessageService.class);
+        startService(messagesServiceIntent);
+        Intent pollMetadataServiceIntent = new Intent(getApplicationContext(), PollMetadataService.class);
+        startService(pollMetadataServiceIntent);
 
         ArrayList <Contact> contactsList = new ArrayList<>();
         adapter = new ContactsAdapter(this, contactsList);
