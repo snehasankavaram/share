@@ -33,7 +33,9 @@ import android.widget.Toast;
 import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.ContactProfileWrapper;
 import com.example.james.sharedclasses.File;
+import com.example.james.sharedclasses.FileMetadataWrapper;
 import com.example.james.sharedclasses.GetContactsRequestWrapper;
+import com.example.james.sharedclasses.GetFilesRequestWrapper;
 import com.example.james.sharedclasses.GetUserRequestWrapper;
 import com.example.james.sharedclasses.LoginUtils;
 import com.example.james.sharedclasses.Profile;
@@ -41,6 +43,7 @@ import com.example.james.sharedclasses.ServerEndpoint;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.Wearable;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.ResponseBody;
 import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 
 import java.io.IOException;
@@ -370,11 +373,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 if (u.getUser().getPassword().equals(mPassword)){
                     profile = u.getProfile();
                     Log.d(TAG, profile.getName());
-                    ArrayList<Contact> contacts = getContacts(u.getUser().getUsername());
+                    String username = u.getUser().getUsername();
+                    ArrayList<Contact> contacts = getContacts(username);
                     LoginUtils.setContacts(getBaseContext(), contacts);
                     DataLayerUtil.sendContactsToWear(mGoogleApiClient, contacts, TAG);
 
-
+                    ArrayList<FileMetadataWrapper> fileMetadata = getFileMetadata(username);
+                    LoginUtils.setFileMetadata(getBaseContext(), fileMetadata);
                     return 0;
                 }
                 return 2;
@@ -448,6 +453,36 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             Log.d(TAG, e.toString());
         }
         return contactsList;
+    }
+
+    public ArrayList<FileMetadataWrapper> getFileMetadata(String username) {
+        ArrayList<FileMetadataWrapper> fileMetadata = new ArrayList<>();
+        ServerEndpoint service = retrofit.create(ServerEndpoint.class);
+        Call<GetFilesRequestWrapper> call = service.getFilesForUser(username);
+        try{
+            Response<GetFilesRequestWrapper> response = call.execute();
+            if (response.isSuccess()) {
+                GetFilesRequestWrapper filesRequestWrapper = response.body();
+                fileMetadata.addAll(filesRequestWrapper.getFiles());
+                Log.d(TAG, "Added filemetadata");
+            }
+            else {
+                int statusCode = response.code();
+                // handle request errors yourself
+                ResponseBody errorBody = response.errorBody();
+                try {
+                    Log.d(TAG, String.format("Error: %d with body: %s", statusCode, errorBody.string()));
+                }
+                catch (IOException e) {
+                    Log.d(TAG, e.toString());
+                }
+            }
+
+        } catch (IOException e) {
+            Log.d(TAG, e.toString());
+        }
+
+        return fileMetadata;
     }
 }
 

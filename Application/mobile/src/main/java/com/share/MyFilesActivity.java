@@ -21,8 +21,13 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 
 import java.util.ArrayList;
+
+import retrofit.GsonConverterFactory;
+import retrofit.Retrofit;
 
 public class MyFilesActivity extends AppCompatActivity {
     private static final String TAG = "MyFilesActivity";
@@ -34,6 +39,7 @@ public class MyFilesActivity extends AppCompatActivity {
     private static final String ACCESS_SECRET_NAME = "ACCESS_SECRET";
 
     DropboxAPI<AndroidAuthSession> mApi;
+    private Retrofit retrofit;
 
     DropboxFilesAdapter dbAdapter;
 
@@ -84,12 +90,24 @@ public class MyFilesActivity extends AppCompatActivity {
                 })
                 .build();
 
+        OkHttpClient client = new OkHttpClient();
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        client.interceptors().add(interceptor);
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl(getString(R.string.WEBSITE_URL))
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
         // Dropbox Stuff
         AndroidAuthSession session = buildSession();
         ListView listView = (ListView) findViewById(R.id.list);
         listView.setBackgroundColor(Color.WHITE);
         mApi = new DropboxAPI<AndroidAuthSession>(session);
-        dbAdapter = new DropboxFilesAdapter(getBaseContext(), new ArrayList<DropboxAPI.Entry>());
+        dbAdapter = new DropboxFilesAdapter(MyFilesActivity.this, new ArrayList<DropboxAPI.Entry>(), retrofit, mApi);
+
         listView.setAdapter(dbAdapter);
         if (!mApi.getSession().isLinked()) {
             mApi.getSession().startOAuth2Authentication(MyFilesActivity.this);
@@ -193,5 +211,4 @@ public class MyFilesActivity extends AppCompatActivity {
             edit.commit();
         }
     }
-
 }

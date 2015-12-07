@@ -1,5 +1,6 @@
 package com.example.james.sharedclasses;
 
+import com.google.android.gms.wearable.DataMap;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -23,6 +24,11 @@ public class Metadatum {
         this.createdAt = createdAt;
     }
 
+    public Metadatum (DataMap dataMap) {
+        this.createdAt = dataMap.getString("createdAt");
+        this.viewUsername = dataMap.getString("viewUsername");
+    }
+
     public String getCreatedAt() {
         return createdAt;
     }
@@ -37,5 +43,11 @@ public class Metadatum {
 
     public void setViewUsername(String viewUsername) {
         this.viewUsername = viewUsername;
+    }
+
+    public DataMap putToDataMap(DataMap dataMap) {
+        dataMap.putString("createdAt", this.createdAt);
+        dataMap.putString("viewUsername", this.viewUsername);
+        return dataMap;
     }
 }

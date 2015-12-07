@@ -2,10 +2,15 @@ package com.share;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import com.example.james.sharedclasses.Contact;
+import com.example.james.sharedclasses.File;
+import com.example.james.sharedclasses.FileMetadataWrapper;
 import com.example.james.sharedclasses.LoginUtils;
+import com.example.james.sharedclasses.Metadatum;
 import com.example.james.sharedclasses.Profile;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataEvent;
@@ -56,12 +61,12 @@ public class DataLayerListenerService extends WearableListenerService {
 
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
-        Log.d(TAG, "Data change called");
         for (DataEvent event : dataEvents) {
             if (event.getType() == DataEvent.TYPE_CHANGED) {
                 // DataItem changed
                 DataItem item = event.getDataItem();
                 if (item.getUri().getPath().compareTo("/username") == 0) {
+                    Log.d(TAG, "Data change called on username");
                     DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
                     String username = dataMap.getString("username");
                     Profile profile = new Profile(dataMap.getDataMap("profile"));
@@ -74,6 +79,7 @@ public class DataLayerListenerService extends WearableListenerService {
                     startActivity(i);
                 }
                 else if (item.getUri().getPath().compareTo("/contacts") == 0) {
+                    Log.d(TAG, "Data change called on contacts");
                     DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
                     ArrayList<DataMap> datamapContacts = dataMap.getDataMapArrayList("contacts");
                     ArrayList<Contact> contacts = new ArrayList<>();
@@ -82,9 +88,81 @@ public class DataLayerListenerService extends WearableListenerService {
                     }
                     LoginUtils.setContacts(DataLayerListenerService.this, contacts);
                 }
+                else if (item.getUri().getPath().compareTo("/files") == 0) {
+                    Log.d(TAG, "Data change called on files");
+                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
+                    ArrayList<DataMap> filesDataMap = dataMap.getDataMapArrayList("files");
+                    ArrayList<FileMetadataWrapper> currFilesMetadata = LoginUtils.getFileMetadata(DataLayerListenerService.this);
+                    ArrayList<FileMetadataWrapper> filesMetadata = new ArrayList<>();
+                    for (DataMap map : filesDataMap) {
+                        FileMetadataWrapper wrapper = new FileMetadataWrapper(map);
+                        filesMetadata.add(wrapper);
+
+                        // Check if this is the item that has been changed
+                        boolean found = false;
+                        for (FileMetadataWrapper iter : currFilesMetadata) {
+                            if (iter.getFile().getRailsID() == wrapper.getFile().getRailsID()) {
+                                if (iter.getFile().getViewCount() != wrapper.getFile().getViewCount()) {
+                                    fireNotifications(wrapper, iter);
+                                    found = true;
+                                }
+                                break;
+                            }
+                        }
+
+                        // New item
+                        if (!found) {
+                            fireNotifications(wrapper);
+                        }
+                    }
+                    LoginUtils.setFileMetadata(this, filesMetadata);
+                }
             } else if (event.getType() == DataEvent.TYPE_DELETED) {
                 // DataItem deleted
             }
         }
+    }
+
+    private void fireNotifications(FileMetadataWrapper updated, FileMetadataWrapper stale) {
+        Log.d(TAG, "FIRE NOTIFICATIONS");
+        ArrayList<Metadatum> updatedMetadata = updated.getMetadata();
+        ArrayList<Metadatum> staleMetadata = stale.getMetadata();
+        for (Metadatum u : updatedMetadata) {
+            boolean found = false;
+            for (Metadatum s : staleMetadata) {
+                if (s.getViewUsername().equals(u.getViewUsername())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                fireNotification(updated.getFile(), u);
+            }
+        }
+    }
+
+    private void fireNotifications(FileMetadataWrapper updated) {
+        ArrayList<Metadatum> updatedMetadata = updated.getMetadata();
+        Log.d(TAG, "FIRE NOTIFICATIONS w/ new file");
+        for (Metadatum u : updatedMetadata) {
+            fireNotification(updated.getFile(), u);
+        }
+    }
+
+    private void fireNotification(File f, Metadatum updatedMetadatum) {
+        Log.d(TAG, "Fire notification on file " + f.getFileName());
+        int notificationId = 001;
+
+        android.support.v4.app.NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.file_icon)
+                        .setContentText(String.format("%s has seen %s", updatedMetadatum.getViewUsername(), f.getFileName()));
+
+        // Get an instance of the NotificationManager service
+        NotificationManagerCompat notificationManager =
+                NotificationManagerCompat.from(this);
+
+        // Build the notification and issues it with notification manager.
+        notificationManager.notify(notificationId, notificationBuilder.build());
     }
 }

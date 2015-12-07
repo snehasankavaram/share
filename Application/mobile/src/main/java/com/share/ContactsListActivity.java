@@ -14,6 +14,7 @@ import android.widget.ListView;
 
 import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.ContactsAdapter;
+import com.example.james.sharedclasses.FileMetadataWrapper;
 import com.example.james.sharedclasses.LoginUtils;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.MessageApi;
@@ -50,8 +51,10 @@ public class ContactsListActivity extends AppCompatActivity implements
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         client.interceptors().add(interceptor);
 
-        Intent intent = new Intent(getApplicationContext(), MobileMessageService.class);
-        startService(intent);
+        Intent messagesServiceIntent = new Intent(getApplicationContext(), MobileMessageService.class);
+        startService(messagesServiceIntent);
+        Intent pollMetadataServiceIntent = new Intent(getApplicationContext(), PollMetadataService.class);
+        startService(pollMetadataServiceIntent);
 
         ArrayList <Contact> contactsList = new ArrayList<>();
         adapter = new ContactsAdapter(this, contactsList);
@@ -174,6 +177,10 @@ public class ContactsListActivity extends AppCompatActivity implements
             adapter.addAll(contacts);
             adapter.notifyDataSetChanged();
             DataLayerUtil.sendContactsToWear(mGoogleApiClient, contacts, TAG);
+        }
+        if (key.equals(LoginUtils.FILE_METADATA_KEY)) {
+            ArrayList<FileMetadataWrapper> filesMetadata = LoginUtils.getFileMetadata(this);
+            DataLayerUtil.sendFileMetadataToWear(mGoogleApiClient, filesMetadata, TAG);
         }
 
     }

@@ -3,6 +3,7 @@ package com.share;
 import android.util.Log;
 
 import com.example.james.sharedclasses.Contact;
+import com.example.james.sharedclasses.FileMetadataWrapper;
 import com.example.james.sharedclasses.Profile;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -26,17 +27,7 @@ public class DataLayerUtil {
             contactsAsDataMaps.add(c.putToDataMap(new DataMap()));
         }
         putDataMapReq.getDataMap().putDataMapArrayList("contacts", contactsAsDataMaps);
-        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
-        PendingResult<DataApi.DataItemResult> pendingResult =
-                Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
-        pendingResult.setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
-            @Override
-            public void onResult(final DataApi.DataItemResult result) {
-                if(result.getStatus().isSuccess()) {
-                    Log.d(TAG, "Data item set: " + result.getDataItem().getUri());
-                }
-            }
-        });
+        sendGenericToWear(mGoogleApiClient, putDataMapReq, TAG);
     }
 
     public static void sendUserDataToWear(GoogleApiClient mGoogleApiClient, String username, Profile profile, final String TAG) {
@@ -45,6 +36,22 @@ public class DataLayerUtil {
 
         putDataMapReq.getDataMap().putString("username", username);
         putDataMapReq.getDataMap().putDataMap("profile", profile.putToDataMap(new DataMap()));
+        sendGenericToWear(mGoogleApiClient, putDataMapReq, TAG);
+    }
+
+    public static void sendFileMetadataToWear(GoogleApiClient mGoogleApiClient, ArrayList<FileMetadataWrapper> filesMetadata, final String TAG) {
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/files");
+        ArrayList<DataMap> dataMaps = new ArrayList<>();
+        for (FileMetadataWrapper fileMetadata : filesMetadata) {
+            dataMaps.add(fileMetadata.putToDataMap(new DataMap()));
+        }
+
+        putDataMapReq.getDataMap().putDataMapArrayList("files", dataMaps);
+
+        sendGenericToWear(mGoogleApiClient, putDataMapReq, TAG);
+    }
+
+    public static void sendGenericToWear(GoogleApiClient mGoogleApiClient, PutDataMapRequest putDataMapReq, final String TAG) {
         PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
         PendingResult<DataApi.DataItemResult> pendingResult =
                 Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);

@@ -25,16 +25,14 @@ public class CreateSharedLinkTask extends AsyncTask<Void, Void, Boolean> {
     private String localPath;
     private String username;
     private String fileName;
-    private String url;
     private final String TAG = "CreateSharedLinkTask";
 
-    public CreateSharedLinkTask(Retrofit retrofit, DropboxAPI api, String localPath, String username, String fileName, String url) {
+    public CreateSharedLinkTask(Retrofit retrofit, DropboxAPI api, String localPath, String username, String fileName) {
         this.retrofit = retrofit;
         this.mApi = api;
         this.localPath = localPath;
         this.username = username;
         this.fileName = fileName;
-        this.url = url;
     }
 
     @Override
@@ -46,7 +44,7 @@ public class CreateSharedLinkTask extends AsyncTask<Void, Void, Boolean> {
             try {
                 Response<GetFilesRequestWrapper> response = call.execute();
                 if (response.isSuccess()) {
-                    Log.d(TAG, String.format("Created file: %s %s %s", username, url, localPath));
+                    Log.d(TAG, String.format("Created file: %s %s %s", username, link.url, localPath));
                     return true;
                 }
                 else {
@@ -58,7 +56,7 @@ public class CreateSharedLinkTask extends AsyncTask<Void, Void, Boolean> {
                         Log.d(TAG, String.format("Error: %d with body: %s", statusCode, errorBody.string()));
                     }
                     catch (IOException e) {
-                        Log.d(TAG, String.format(e.toString()));
+                        Log.d(TAG, e.toString());
                     }
                 }
             } catch (IOException e) {
