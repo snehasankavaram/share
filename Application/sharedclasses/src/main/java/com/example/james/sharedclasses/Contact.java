@@ -69,8 +69,10 @@ public class Contact implements Serializable {
         map.putDataMap("profile", this.profile.putToDataMap(new DataMap()));
         map.putString("notes", this.notes);
         ArrayList<DataMap> filesDataMap = new ArrayList<>();
-        for (File f : this.files) {
-            filesDataMap.add(f.putToDataMap(new DataMap()));
+        if (this.files != null) {
+            for (File f : this.files) {
+                filesDataMap.add(f.putToDataMap(new DataMap()));
+            }
         }
         map.putDataMapArrayList("files", filesDataMap);
         return map;

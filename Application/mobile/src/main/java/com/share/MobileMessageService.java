@@ -122,7 +122,7 @@ public class MobileMessageService extends WearableListenerService implements Goo
                     ArrayList<Contact> contacts = LoginUtils.getContacts(getBaseContext());
                     Contact c = contactProfileWrapper.getContact();
                     c.setProfile(contactProfileWrapper.getProfile());
-
+                    c.setFiles(contactProfileWrapper.getFiles());
                     Log.d(TAG, "Added contact: " + contactProfileWrapper.getContact().getProfile().getName());
                     contacts.add(c);
                     LoginUtils.setContacts(getBaseContext(), contacts);

@@ -18,7 +18,7 @@ public class LoginUtils {
     private static final String LOGIN_KEY = "username";
     private static final String PROFILE_KEY = "profile";
     public static final String CONTACTS_KEY = "contacts";
-    private static final String FILE_METADATA_KEY = "FILE_METADATA";
+    public static final String FILE_METADATA_KEY = "FILE_METADATA";
 
     public static SharedPreferences getSharedPreferences(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
