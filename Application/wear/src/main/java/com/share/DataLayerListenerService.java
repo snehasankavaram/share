@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.File;
@@ -104,8 +105,8 @@ public class DataLayerListenerService extends WearableListenerService {
                             if (iter.getFile().getRailsID() == wrapper.getFile().getRailsID()) {
                                 if (iter.getFile().getViewCount() != wrapper.getFile().getViewCount()) {
                                     fireNotifications(wrapper, iter);
-                                    found = true;
                                 }
+                                found = true;
                                 break;
                             }
                         }
@@ -152,11 +153,11 @@ public class DataLayerListenerService extends WearableListenerService {
     private void fireNotification(File f, Metadatum updatedMetadatum) {
         Log.d(TAG, "Fire notification on file " + f.getFileName());
         int notificationId = 001;
-
+        String message = String.format("%s has seen %s", updatedMetadatum.getViewUsername(), f.getFileName());
         android.support.v4.app.NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.file_icon)
-                        .setContentText(String.format("%s has seen %s", updatedMetadatum.getViewUsername(), f.getFileName()));
+                        .setContentText(message);
 
         // Get an instance of the NotificationManager service
         NotificationManagerCompat notificationManager =
@@ -164,5 +165,8 @@ public class DataLayerListenerService extends WearableListenerService {
 
         // Build the notification and issues it with notification manager.
         notificationManager.notify(notificationId, notificationBuilder.build());
+
+        Toast toast = Toast.makeText(this, message, Toast.LENGTH_LONG);
+        toast.show();
     }
 }
