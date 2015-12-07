@@ -22,6 +22,7 @@ import java.util.ArrayList;
  * Created by james on 11/28/15.
  */
 public class ContactsAdapter extends ArrayAdapter<Contact> {
+    private Context context;
     private static class ViewHolder {
         TextView name;
         ImageView image;
@@ -29,6 +30,7 @@ public class ContactsAdapter extends ArrayAdapter<Contact> {
 
     public ContactsAdapter(Context context, ArrayList<Contact> contacts) {
         super(context, R.layout.contact_item, contacts);
+        this.context = context;
     }
 
     @Override
@@ -52,6 +54,15 @@ public class ContactsAdapter extends ArrayAdapter<Contact> {
 
         int [] images = {com.example.james.sharedclasses.R.drawable.face1, com.example.james.sharedclasses.R.drawable.face2, com.example.james.sharedclasses.R.drawable.face3, com.example.james.sharedclasses.R.drawable.face4};
         int selected = images[contact.getProfile().getName().charAt(0) % 4];
+
+        if (contact.getProfile().getName() != null) {
+            String uri = String.format("@drawable/%s", contact.getProfile().getName().replace(" ", "_").toLowerCase());
+            int imageResource = context.getResources().getIdentifier(uri, null, context.getPackageName());
+            if (imageResource != 0) {
+                selected = imageResource;
+            }
+        }
+
         viewHolder.image.setImageBitmap(getCroppedBitmap(BitmapFactory.decodeResource(parent.getResources(), selected)));
         // Return the completed view to render on screen
         return convertView;

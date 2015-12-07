@@ -59,6 +59,13 @@ public class ProfileFragment extends Fragment {
         int [] images = {R.drawable.face1, R.drawable.face2, R.drawable.face3, R.drawable.face4};
 
         int selected = images[p.getName().charAt(0) % 4];
+        if (p.getName() != null) {
+            String uri = String.format("@drawable/%s",p.getName().replace(" ", "_").toLowerCase());
+            int imageResource = getActivity().getResources().getIdentifier(uri, null, this.getActivity().getPackageName());
+            if (imageResource != 0) {
+                selected = imageResource;
+            }
+        }
 
         ((ImageView) rootView.findViewById(R.id.image)).setImageBitmap(getCroppedBitmap(BitmapFactory.decodeResource(getResources(), selected)));
         return rootView;
