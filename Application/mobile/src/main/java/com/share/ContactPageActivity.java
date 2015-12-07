@@ -33,9 +33,9 @@ public class ContactPageActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withName("My profile");
-        PrimaryDrawerItem item2 = new PrimaryDrawerItem().withName("My files");
-        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withName("My contacts");
+        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withName("Profile");
+        PrimaryDrawerItem item2 = new PrimaryDrawerItem().withName("Files");
+        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withName("Contacts");
 
         new DrawerBuilder()
                 .withActivity(this)
@@ -47,6 +47,9 @@ public class ContactPageActivity extends AppCompatActivity {
                         item3
                 )
                 .withToolbar(toolbar)
+                .withInnerShadow(false)
+                .withDrawerWidthPx(220)
+                .withSelectedItemByPosition(3)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {

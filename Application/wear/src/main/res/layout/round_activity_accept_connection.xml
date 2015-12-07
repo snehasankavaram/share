@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context="com.share.AcceptConnectionActivity"
     tools:deviceIds="wear_round"
-    android:background="@color/dark_grey">
+    android:background="#595959">
 
     <ImageView
         android:layout_width="100dp"

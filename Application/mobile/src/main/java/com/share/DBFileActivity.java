@@ -3,6 +3,7 @@ package com.share;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -62,6 +63,7 @@ public class DBFileActivity extends Activity {
         }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setBackgroundColor(Color.rgb(111, 191, 215));
         AlertDialog.Builder builder = new AlertDialog.Builder(DBFileActivity.this);
         builder.setNegativeButton("okay", new DialogInterface.OnClickListener() {
             @Override
@@ -79,10 +81,11 @@ public class DBFileActivity extends Activity {
         for (FileMetadataWrapper fileMetadata : filesMetadata) {
             String currLocalPath = fileMetadata.getFile().getLocalPath();
             String currFileName = fileMetadata.getFile().getFileName();
+
             if (currLocalPath.equals(localPath) && currFileName.equals(fileName)) {
                 MetadataAdapter adapter = new MetadataAdapter(this, fileMetadata.getMetadata());
                 listView.setAdapter(adapter);
-                textView.setText(String.format("View count: %d", fileMetadata.getFile().getViewCount()));
+                textView.setText(fileMetadata.getFile().getViewCount() + "");
                 fab.setVisibility(View.VISIBLE);
                 break;
             }

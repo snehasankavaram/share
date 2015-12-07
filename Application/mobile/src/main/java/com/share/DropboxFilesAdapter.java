@@ -2,6 +2,8 @@ package com.share;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -10,9 +12,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.dropbox.client2.DropboxAPI;
 import com.example.james.sharedclasses.LoginUtils;
@@ -29,9 +34,10 @@ public class DropboxFilesAdapter extends ArrayAdapter<DropboxAPI.Entry> {
     private static class ViewHolder {
         TextView file_name;
         ImageView imageView;
-        ImageButton button;
+        Switch button;
     }
 
+    private CompoundButton.OnCheckedChangeListener mListener;
     private Context context;
     private Retrofit retrofit;
     private DropboxAPI mApi;
@@ -51,7 +57,7 @@ public class DropboxFilesAdapter extends ArrayAdapter<DropboxAPI.Entry> {
             convertView = inflater.inflate(R.layout.dropbox_file, parent, false);
             viewHolder.file_name = (TextView) convertView.findViewById(R.id.file_name);
             viewHolder.imageView = (ImageView) convertView.findViewById(R.id.imageView);
-            viewHolder.button = (ImageButton) convertView.findViewById(R.id.imageButton);
+            viewHolder.button = (Switch) convertView.findViewById(R.id.imageButton);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -65,18 +71,32 @@ public class DropboxFilesAdapter extends ArrayAdapter<DropboxAPI.Entry> {
             Drawable image = ContextCompat.getDrawable(context, imageResource);
             viewHolder.imageView.setImageDrawable(image);
         }
-        final AlertDialog dialog = createDialog(e);
-        viewHolder.button.setOnClickListener(new View.OnClickListener() {
+        String msg = "Would you like to share this file with your contacts?";
+        final AlertDialog dialog1 = createDialog1(e, msg, viewHolder.button);
+
+        String msg2 = "Would you like to undo sharing of this file?";
+        final AlertDialog dialog2 = createDialog2(e, msg2, viewHolder.button);
+
+        mListener = new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                dialog.show();
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    dialog1.show();
+                } else {
+                    dialog2.show();
+                }
             }
-        });
+        };
+        viewHolder.button.getThumbDrawable().setColorFilter(Color.rgb(111, 191, 215), PorterDuff.Mode.MULTIPLY);
+        viewHolder.button.getTrackDrawable().setColorFilter(Color.rgb(111, 191, 215), PorterDuff.Mode.MULTIPLY);
+
+        viewHolder.button.setOnCheckedChangeListener(mListener);
+
 
         return convertView;
     }
 
-    private AlertDialog createDialog(final DropboxAPI.Entry entry) {
+    private AlertDialog createDialog1(final DropboxAPI.Entry entry, String msg, final Switch button) {
         android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(context);
 //        LayoutInflater inflater = LayoutInflater.from(getContext());
 //        View dialogView = inflater.inflate(R.layout.alert_dialog, null);
@@ -85,7 +105,7 @@ public class DropboxFilesAdapter extends ArrayAdapter<DropboxAPI.Entry> {
 //        TextView textView = (TextView) dialogView.findViewById(R.id.textView);
 //        builder.setView(dialogView);
 
-        builder.setMessage("Do you want to share this file with others?")
+        builder.setMessage(msg)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         final String username = LoginUtils.getLoginToken(getContext());
@@ -97,6 +117,40 @@ public class DropboxFilesAdapter extends ArrayAdapter<DropboxAPI.Entry> {
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // User cancelled the dialog
+                        button.setOnCheckedChangeListener (null);
+                        button.setChecked (false);
+                        button.setOnCheckedChangeListener (mListener);
+                    }
+                });
+        // Create the AlertDialog object and return it
+        AlertDialog dialog = builder.create();
+        return dialog;
+    }
+
+    private AlertDialog createDialog2(final DropboxAPI.Entry entry, String msg, final Switch button) {
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(context);
+//        LayoutInflater inflater = LayoutInflater.from(getContext());
+//        View dialogView = inflater.inflate(R.layout.alert_dialog, null);
+//
+//        ListView listView = (ListView) dialogView.findViewById(R.id.listView);
+//        TextView textView = (TextView) dialogView.findViewById(R.id.textView);
+//        builder.setView(dialogView);
+
+        builder.setMessage(msg)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+//                        final String username = LoginUtils.getLoginToken(getContext());
+//                        Log.d(TAG, "Username: " + username);
+//                        CreateSharedLinkTask task = new CreateSharedLinkTask(retrofit, mApi, entry.path, username, entry.fileName());
+//                        task.execute();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                        button.setOnCheckedChangeListener (null);
+                        button.setChecked (true);
+                        button.setOnCheckedChangeListener (mListener);
                     }
                 });
         // Create the AlertDialog object and return it

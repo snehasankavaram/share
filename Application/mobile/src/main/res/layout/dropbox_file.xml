@@ -1,39 +1,37 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" android:orientation="horizontal"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:descendantFocusability="blocksDescendants">
+    android:padding="20dp"
+    android:descendantFocusability="blocksDescendants"
+    android:background="#fff">
     <ImageView
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginBottom="20dp"
         android:layout_marginRight="20dp"
-        android:id="@+id/imageView"/>
+        android:layout_marginTop="15dp"
+        android:id="@+id/imageView"
+        android:background="@color/md_blue_100"/>
     <TextView
         android:textSize="20dp"
         android:id="@+id/file_name"
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textColor="@color/wallet_holo_blue_light"
-        android:text="Superl ong adfsf asf sasf sdd asd s" />
+        android:layout_marginTop="26dp"
+        android:text="file.txt" />
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="end">
-        <ImageButton
+        <Switch
             android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:elevation="2dp"
+            android:layout_marginTop="15dp"
+            android:layout_height="50dp"
             android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:src="@drawable/logo"
-            android:background="@color/white"
             android:id="@+id/imageButton"
+
             android:focusable="false"/>
     </LinearLayout>
 

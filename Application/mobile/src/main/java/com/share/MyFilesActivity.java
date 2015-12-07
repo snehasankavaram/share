@@ -48,9 +48,9 @@ public class MyFilesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_files);
 
-        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withName("My profile");
-        PrimaryDrawerItem item2 = new PrimaryDrawerItem().withName("My files");
-        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withName("My contacts");
+        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withName("Profile");
+        PrimaryDrawerItem item2 = new PrimaryDrawerItem().withName("Files");
+        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withName("Contacts");
 
         // Handle Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -64,7 +64,9 @@ public class MyFilesActivity extends AppCompatActivity {
                         item2,
                         new DividerDrawerItem(),
                         item3
-                )
+                ).withInnerShadow(false)
+                .withDrawerWidthPx(220)
+                .withSelectedItemByPosition(2)
                 .withToolbar(toolbar)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override

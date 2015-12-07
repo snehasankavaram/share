@@ -107,9 +107,9 @@ public class ContactsListActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withName("My profile");
-        PrimaryDrawerItem item2 = new PrimaryDrawerItem().withName("My files");
-        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withName("My contacts");
+        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withName("Profile");
+        PrimaryDrawerItem item2 = new PrimaryDrawerItem().withName("Files");
+        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withName("Contacts");
 
         new DrawerBuilder()
                 .withActivity(this)
@@ -119,7 +119,9 @@ public class ContactsListActivity extends AppCompatActivity implements
                         item2,
                         new DividerDrawerItem(),
                         item3
-                )
+                ).withInnerShadow(false)
+                .withDrawerWidthPx(220)
+                .withSelectedItemByPosition(3)
                 .withToolbar(toolbar)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override

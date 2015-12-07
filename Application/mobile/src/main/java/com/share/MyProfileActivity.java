@@ -69,9 +69,9 @@ public class MyProfileActivity extends AppCompatActivity {
         Button button = (Button)findViewById(R.id.edit);
         button.setOnClickListener(editListener);
 
-        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withName("My profile");
-        PrimaryDrawerItem item2 = new PrimaryDrawerItem().withName("My files");
-        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withName("My contacts");
+        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withName("Profile");
+        PrimaryDrawerItem item2 = new PrimaryDrawerItem().withName("Files");
+        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withName("Contacts");
 
         // Handle Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -85,7 +85,9 @@ public class MyProfileActivity extends AppCompatActivity {
                         item2,
                         new DividerDrawerItem(),
                         item3
-                )
+                ).withInnerShadow(false)
+                .withDrawerWidthPx(220)
+                .withSelectedItemByPosition(0)
                 .withToolbar(toolbar)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override

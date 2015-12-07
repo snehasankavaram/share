@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -15,6 +16,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.wearable.view.WatchViewStub;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.Profile;
@@ -44,6 +46,9 @@ public class AcceptConnectionActivity extends Activity {
 
                     }
                 });
+                ImageView i = (ImageView) stub.findViewById(R.id.imageView);
+
+                i.setImageBitmap(getCroppedBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.face4)));
                 decline = (ImageButton) stub.findViewById(R.id.declineButton);
                 decline.setOnClickListener(new View.OnClickListener() {
                     @Override
