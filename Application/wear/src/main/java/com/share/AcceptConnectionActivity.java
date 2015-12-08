@@ -2,6 +2,7 @@ package com.share;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.wearable.view.WatchViewStub;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -21,17 +23,57 @@ import android.widget.TextView;
 
 import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.Profile;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.DataEvent;
+import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.DataItem;
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.DataMapItem;
+import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.NodeApi;
+import com.google.android.gms.wearable.Wearable;
 
-public class AcceptConnectionActivity extends Activity {
+public class AcceptConnectionActivity extends Activity implements DataApi.DataListener{
 
     private ImageButton accept;
     private ImageButton decline;
+    private Profile profile;
+    private String TAG = "AcceptConnectionActivity";
+    private static final String ACCEPTED_CONNECTION = "/ACCEPTED_CONNECTION";
+    GoogleApiClient mGoogleApiClient;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accept_connection);
-        final Contact contact = new Contact(new Profile("Ben Bodien", "ben@evertask.com", "925-351-1211","CEO at EverTask"));
+        profile = (Profile) getIntent().getSerializableExtra("profile");
+        if (profile == null) {
+            Log.d(TAG, "Profile is null");
+            profile = new Profile("Ben Bodien", "ben@evertask.com", "925-351-1211","CEO at EverTask");
+        }
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Wearable.API)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(Bundle connectionHint) {
+                        Log.d("connected from watch", "test");
+                    }
+
+                    @Override
+                    public void onConnectionSuspended(int cause) {
+                        /* Connection was interrupted */
+                    }
+                })
+                .build();
+        Wearable.DataApi.addListener(mGoogleApiClient, this);
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Waiting for connection to accept");
+
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
             @Override
@@ -40,20 +82,17 @@ public class AcceptConnectionActivity extends Activity {
                 accept.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        createNotification(contact);
-                        Intent i = new Intent(getApplicationContext(), ContactActivity.class);
-                        i.putExtra("contact", contact);
-                        startActivity(i);
-
+                        progressDialog.show();
+                        sendMessage(ACCEPTED_CONNECTION, profile.getName());
                     }
                 });
                 TextView textView = (TextView) stub.findViewById(R.id.contact_name);
-                textView.setText(contact.getProfile().getName());
+                textView.setText(profile.getName());
 
                 ImageView i = (ImageView) stub.findViewById(R.id.imageView);
                 int selected = R.drawable.face4;
-                if (contact.getProfile() != null && contact.getProfile().getName() != null) {
-                    String uri = String.format("@drawable/%s", contact.getProfile().getName().replace(" ", "_").toLowerCase());
+                if (profile != null && profile.getName() != null) {
+                    String uri = String.format("@drawable/%s", profile.getName().replace(" ", "_").toLowerCase());
                     int imageResource = getBaseContext().getResources().getIdentifier(uri, null, getBaseContext().getPackageName());
                     if (imageResource != 0) {
                         selected = imageResource;
@@ -122,5 +161,41 @@ public class AcceptConnectionActivity extends Activity {
         //Bitmap _bmp = Bitmap.createScaledBitmap(output, 60, 60, false);
         //return _bmp;
         return output;
+    }
+
+    @Override
+    public void onDataChanged(DataEventBuffer dataEventBuffer) {
+        for (DataEvent event : dataEventBuffer) {
+            if (event.getType() == DataEvent.TYPE_CHANGED) {
+                DataItem item = event.getDataItem();
+                if (item.getUri().getPath().compareTo("/new_contact") == 0) {
+                    if (progressDialog.isShowing()) {
+                        progressDialog.dismiss();
+                    }
+                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
+                    DataMap dataMapNewConnection = dataMap.getDataMap("contact");
+                    Contact contact = new Contact(dataMapNewConnection);
+                    createNotification(contact);
+                    Intent i = new Intent(getApplicationContext(), ContactActivity.class);
+                    i.putExtra("contact", contact);
+                    startActivity(i);
+                }
+            }
+        }
+
+    }
+
+    private void sendMessage( final String path, final String text ) {
+        new Thread( new Runnable() {
+            @Override
+            public void run() {
+                mGoogleApiClient.connect();
+                NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.getConnectedNodes( mGoogleApiClient ).await();
+                for(Node node : nodes.getNodes()) {
+                    MessageApi.SendMessageResult result = Wearable.MessageApi.sendMessage(
+                            mGoogleApiClient, node.getId(), path, text.getBytes() ).await();
+                }
+            }
+        }).start();
     }
 }

@@ -1,7 +1,8 @@
 package com.share;
 
 import android.app.Activity;
-import android.content.Context;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
@@ -13,13 +14,20 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.james.sharedclasses.Profile;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.DataEvent;
+import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.DataItem;
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
 
-public class ColorPickerActivity extends Activity {
+public class ColorPickerActivity extends Activity implements DataApi.DataListener {
     ImageView[] imageViews = new ImageView[4];
 
     String mNode; // the connected device to send the message to
@@ -29,17 +37,18 @@ public class ColorPickerActivity extends Activity {
     private float x1, x2;
     static final int MIN_DISTANCE = 150;
 
+    private ProgressDialog progressDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_color_picker);
 
-        Context context = getApplicationContext();
         CharSequence text = "select a color";
         int duration = Toast.LENGTH_SHORT;
 
-        Toast toast = Toast.makeText(context, text, duration);
+        Toast toast = Toast.makeText(ColorPickerActivity.this, text, duration);
         toast.show();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -56,6 +65,22 @@ public class ColorPickerActivity extends Activity {
                     }
                 })
                 .build();
+
+        progressDialog = new ProgressDialog(ColorPickerActivity.this);
+        progressDialog.setMessage("Waiting for contact");
+        progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.d(TAG, "Canceled progress dialog");
+                mGoogleApiClient.connect();
+                sendMessage("/cancel", "true");
+                dialog.dismiss();
+            }
+        });
+        progressDialog.setCanceledOnTouchOutside(true);
+        progressDialog.setCancelable(true);
+
+        Wearable.DataApi.addListener(mGoogleApiClient, this);
 
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
@@ -103,14 +128,10 @@ public class ColorPickerActivity extends Activity {
                         for (ImageView i : imageViews) {
                             if (event.getAction() == MotionEvent.ACTION_UP) { // click event
                                 Rect childRect = new Rect();
-                                i.getHitRect(childRect);
-                                Log.d(TAG, String.format("Child rect. Left %d, Right %d ", childRect.right,  childRect.left));
+                                i.getGlobalVisibleRect(childRect);
                                 // check if event is within child's boundaries
-                                if (childRect.contains((int) event.getX(), (int) event.getY())) {
-                                    Log.d(TAG, "clicked");
+                                if (childRect.contains((int) event.getRawX(), (int) event.getRawY())) {
                                     sendColorToPhone(i);
-                                    Intent intent = new Intent(getApplicationContext(), AcceptConnectionActivity.class);
-                                    startActivity(intent);
                                     return true;
                                 }
                             }
@@ -129,6 +150,7 @@ public class ColorPickerActivity extends Activity {
         Log.d("Color", c);
         mGoogleApiClient.connect();
         sendMessage("/Color", c);
+        progressDialog.show();
     }
 
     private void sendMessage( final String path, final String text ) {
@@ -143,5 +165,27 @@ public class ColorPickerActivity extends Activity {
                 }
             }
         }).start();
+    }
+
+
+    @Override
+    public void onDataChanged(DataEventBuffer dataEvents) {
+        for (DataEvent event : dataEvents) {
+            if (event.getType() == DataEvent.TYPE_CHANGED) {
+                DataItem item = event.getDataItem();
+                if (item.getUri().getPath().compareTo("/new_connection") == 0) {
+                    Log.d(TAG, "Data change called on new connection");
+                    if (progressDialog.isShowing()) {
+                        progressDialog.dismiss();
+                    }
+                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
+                    DataMap dataMapNewConnection = dataMap.getDataMap("profile");
+                    Profile profile = new Profile(dataMapNewConnection);
+                    Intent intent = new Intent(getApplicationContext(), AcceptConnectionActivity.class);
+                    intent.putExtra("profile", profile);
+                    startActivity(intent);
+                }
+            }
+        }
     }
 }

@@ -51,6 +51,18 @@ public class DataLayerUtil {
         sendGenericToWear(mGoogleApiClient, putDataMapReq, TAG);
     }
 
+    public static void sendNewConnectionProfileToWear(GoogleApiClient mGoogleApiClient, Profile profile, final String TAG) {
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/new_connection");
+        putDataMapReq.getDataMap().putDataMap("profile", profile.putToDataMap(new DataMap()));
+        sendGenericToWear(mGoogleApiClient, putDataMapReq, TAG);
+    }
+
+    public static void sendNewContactToWear(GoogleApiClient mGoogleApiClient, Contact contact, final String TAG) {
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/new_contact");
+        putDataMapReq.getDataMap().putDataMap("contact", contact.putToDataMap(new DataMap()));
+        sendGenericToWear(mGoogleApiClient, putDataMapReq, TAG);
+    }
+
     public static void sendGenericToWear(GoogleApiClient mGoogleApiClient, PutDataMapRequest putDataMapReq, final String TAG) {
         PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
         PendingResult<DataApi.DataItemResult> pendingResult =

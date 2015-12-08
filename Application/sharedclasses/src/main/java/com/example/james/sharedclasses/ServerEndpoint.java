@@ -31,4 +31,10 @@ public interface ServerEndpoint {
     @POST("/db_files/update")
     Call<GetFilesRequestWrapper> updateMetadataForFile(@Body UpdateFileMetadataRequest request);
 
+    @POST("/connection/create")
+    Call<GetConnectionEstablishedWrapper> createConnection(@Body CreateConnectionRequest request);
+
+    @GET("/connection/show")
+    Call<GetConnectionEstablishedWrapper> checkConnectionEstablished(@Query("username") String username, @Query("color") String color);
+
 }

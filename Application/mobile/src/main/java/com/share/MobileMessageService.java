@@ -2,16 +2,22 @@ package com.share;
 
 import android.content.Intent;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.example.james.sharedclasses.Connection;
 import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.ContactProfileWrapper;
+import com.example.james.sharedclasses.CreateConnectionRequest;
 import com.example.james.sharedclasses.CreateContactRequest;
+import com.example.james.sharedclasses.GetConnectionEstablishedWrapper;
+import com.example.james.sharedclasses.GetUserRequestWrapper;
 import com.example.james.sharedclasses.LoginUtils;
+import com.example.james.sharedclasses.Profile;
 import com.example.james.sharedclasses.ServerEndpoint;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -30,12 +36,15 @@ import java.util.ArrayList;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.GsonConverterFactory;
+import retrofit.Response;
 import retrofit.Retrofit;
 
 public class MobileMessageService extends WearableListenerService implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
     private static final String COLOR = "/Color";
+    private static final String ACCEPTED_CONNECTION = "/ACCEPTED_CONNECTION";
+    private static final String CANCELED = "/cancel";
 
     private GoogleApiClient mGoogleApiClient;
     private Retrofit retrofit;
@@ -46,6 +55,7 @@ public class MobileMessageService extends WearableListenerService implements Goo
     private String mLatitude;
     private String mLongitude;
     private String color = "";
+    private GetConnectionTask getConnectionTask;
 
     @Override
     public void onCreate() {
@@ -79,14 +89,49 @@ public class MobileMessageService extends WearableListenerService implements Goo
 
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
-
         if( messageEvent.getPath().equalsIgnoreCase( COLOR ) ) {
             this.color = new String(messageEvent.getData(), StandardCharsets.UTF_8);
+            getConnectionTask  = new GetConnectionTask(retrofit.create(ServerEndpoint.class), color);
+            getConnectionTask.execute();
             Log.d("got message", this.color);
-//            this.connect2Server();
-            addContact();
         }
+        else if ( messageEvent.getPath().equalsIgnoreCase( ACCEPTED_CONNECTION )) {
+            String their_username = new String(messageEvent.getData(), StandardCharsets.UTF_8);
+            addContact(their_username);
+        }
+        else if ( messageEvent.getPath().equalsIgnoreCase( CANCELED)) {
+            if (getConnectionTask != null) {
+                Log.d(TAG, "Canceled task");
+                getConnectionTask.cancel(true);
+            }
+        }
+    }
 
+    private boolean createConnection(String color) {
+        ServerEndpoint service = retrofit.create(ServerEndpoint.class);
+        final String username = LoginUtils.getLoginToken(this);
+        Call<GetConnectionEstablishedWrapper> call = service.createConnection(new CreateConnectionRequest(username, color));
+        try {
+            Response<GetConnectionEstablishedWrapper> response = call.execute();
+            if (response.isSuccess()) {
+                return true;
+            } else {
+                int statusCode = response.code();
+
+                // handle request errors yourself
+                ResponseBody errorBody = response.errorBody();
+                try {
+                    Log.d(TAG, String.format("Error: %d with body: %s", statusCode, errorBody.string()));
+                }
+                catch (IOException e) {
+                    Log.d(TAG, String.format(e.toString()));
+                }
+            }
+        }
+        catch (IOException e){
+            Log.d(TAG, e.toString());
+        }
+        return false;
     }
 
     @Override
@@ -106,12 +151,12 @@ public class MobileMessageService extends WearableListenerService implements Goo
     @Override
     public void onConnectionSuspended(int i) {}
 
-    private void addContact () {
+    private void addContact (String contact_username) {
         ServerEndpoint service = retrofit.create(ServerEndpoint.class);
 //        SharedPreferences mPrefs = getSharedPreferences(getString(R.string.USER_DATA), Context.MODE_PRIVATE);
 //        String username = mPrefs.getString("username", "");
         String username = LoginUtils.getLoginToken(this);
-        Call<ContactProfileWrapper> call = service.createContact(new CreateContactRequest(username, "bbodien"));
+        Call<ContactProfileWrapper> call = service.createContact(new CreateContactRequest(username, contact_username));
         call.enqueue(new Callback<ContactProfileWrapper>() {
             @Override
             public void onResponse(retrofit.Response<ContactProfileWrapper> response, Retrofit retrofit) {
@@ -123,6 +168,8 @@ public class MobileMessageService extends WearableListenerService implements Goo
                     Contact c = contactProfileWrapper.getContact();
                     c.setProfile(contactProfileWrapper.getProfile());
                     c.setFiles(contactProfileWrapper.getFiles());
+                    DataLayerUtil.sendNewContactToWear(mGoogleApiClient, c, TAG);
+
                     Log.d(TAG, "Added contact: " + contactProfileWrapper.getContact().getProfile().getName());
                     contacts.add(c);
                     LoginUtils.setContacts(getBaseContext(), contacts);
@@ -153,6 +200,114 @@ public class MobileMessageService extends WearableListenerService implements Goo
         });
 
     }
+
+    public class GetConnectionTask extends AsyncTask<Void, Void, Profile> {
+        private String color;
+        private ServerEndpoint serverEndpoint;
+        public GetConnectionTask(ServerEndpoint serverEndpoint, String color) {
+            this.color = color;
+            this.serverEndpoint = serverEndpoint;
+        }
+        @Override
+        protected Profile doInBackground(Void... params) {
+            boolean createdConnection = false;
+            while (true) {
+                if (isCancelled()) {
+                    break;
+                }
+                if (!createdConnection) {
+                    createdConnection = createConnection(color);
+                    if (!createdConnection) {
+                        return null;
+                    }
+                }
+                else {
+                    String possibleProfile = checkConnectionEstablished(color);
+                    if (possibleProfile == null) {
+                        try{
+                            Log.d(TAG, "Didn't find connection yet, will try again in 1 second");
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            Log.d(TAG, e.toString());
+                            return null;
+                        }
+
+                        // Haven't found other connection yet, restart loop.
+                        continue;
+                    }
+                    Call<GetUserRequestWrapper> requestWrapper = serverEndpoint.getUser(possibleProfile);
+                    try{
+                        Response<GetUserRequestWrapper> response = requestWrapper.execute();
+                        if (response.isSuccess()) {
+                            GetUserRequestWrapper userRequest = response.body();
+                            return userRequest.getProfile();
+                        }
+                        else {
+                            int statusCode = response.code();
+
+                            // handle request errors yourself
+                            ResponseBody errorBody = response.errorBody();
+                            try {
+                                Log.d(TAG, String.format("Error: %d with body: %s", statusCode, errorBody.string()));
+                            }
+                            catch (IOException e) {
+                                Log.d(TAG, String.format(e.toString()));
+                            }
+
+                        }
+                    }
+                    catch (IOException e) {
+                        Log.d(TAG, e.toString());
+                    }
+
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Profile result) {
+            if (result != null) {
+                Log.d(TAG, "Get Connection task postExecute called");
+                DataLayerUtil.sendNewConnectionProfileToWear(mGoogleApiClient, result, TAG);
+            }
+        }
+    }
+
+    private String checkConnectionEstablished(String color) {
+        ServerEndpoint service = retrofit.create(ServerEndpoint.class);
+        String username = LoginUtils.getLoginToken(MobileMessageService.this);
+        Call<GetConnectionEstablishedWrapper> getConnectionCall = service.checkConnectionEstablished(username, color);
+        try{
+            Response<GetConnectionEstablishedWrapper> response = getConnectionCall.execute();
+            if (response.isSuccess()) {
+                GetConnectionEstablishedWrapper wrapper = response.body();
+                for (Connection connection : wrapper.getConnection()) {
+                    if (!connection.getUsername().equals(username)) {
+                        return connection.getUsername();
+                    }
+                }
+            }
+            else {
+                int statusCode = response.code();
+
+                // handle request errors yourself
+                ResponseBody errorBody = response.errorBody();
+                try {
+                    Log.d(TAG, String.format("Error: %d with body: %s", statusCode, errorBody.string()));
+                }
+                catch (IOException e) {
+                    Log.d(TAG, String.format(e.toString()));
+                }
+
+            }
+        } catch (IOException e) {
+            Log.d(TAG, e.toString());
+        }
+        return null;
+    }
+
 
 //    private void connect2Server () {
 //
