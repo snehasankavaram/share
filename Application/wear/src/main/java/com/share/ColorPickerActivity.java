@@ -3,22 +3,21 @@ package com.share;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.wearable.view.WatchViewStub;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.wearable.CapabilityInfo;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
-
-import java.util.Set;
 
 public class ColorPickerActivity extends Activity {
     ImageView[] imageViews = new ImageView[4];
@@ -26,6 +25,10 @@ public class ColorPickerActivity extends Activity {
     String mNode; // the connected device to send the message to
     GoogleApiClient mGoogleApiClient;
     public static String TAG = "ColorPicker";
+
+    private float x1, x2;
+    static final int MIN_DISTANCE = 150;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,18 +48,6 @@ public class ColorPickerActivity extends Activity {
                     @Override
                     public void onConnected(Bundle connectionHint) {
                         Log.d("connected from watch", "test");
-//                        CapabilityApi.CapabilityListener capabilityListener =
-//                                new CapabilityApi.CapabilityListener() {
-//                                    @Override
-//                                    public void onCapabilityChanged(CapabilityInfo capabilityInfo) {
-//                                        updateTranscriptionCapability(capabilityInfo);
-//                                    }
-//                                };
-//
-//                        Wearable.CapabilityApi.addCapabilityListener(
-//                                mGoogleApiClient,
-//                                capabilityListener,
-//                                "message_passer");
                     }
 
                     @Override
@@ -85,65 +76,51 @@ public class ColorPickerActivity extends Activity {
                 imageViews[2] = i3;
                 imageViews[3] = i4;
 
-                for (ImageView i : imageViews) {
-                    i.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            sendColorToPhone((ImageView) v);
-                            Intent i = new Intent(getApplicationContext(), AcceptConnectionActivity.class);
-                            startActivity(i);
+                findViewById(R.id.layout).setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_DOWN:
+                                Log.d(TAG, "Action down");
+                                x1 = event.getX();
+                                return true;
+                            case MotionEvent.ACTION_UP:
+                                Log.d(TAG, "Action up");
+                                x2 = event.getX();
+                                float deltaY = x2 - x1;
+                                if (Math.abs(deltaY) > MIN_DISTANCE) {
+                                    // Swipe from left to right
+                                    Log.d(TAG, "Swipe left to right");
+                                    if (x2 > x1) {
+                                        Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                                        startActivity(i);
+                                        return true;
+                                    }
+                                }
+                                break;
                         }
-                    });
-                }
+
+                        for (ImageView i : imageViews) {
+                            if (event.getAction() == MotionEvent.ACTION_UP) { // click event
+                                Rect childRect = new Rect();
+                                i.getHitRect(childRect);
+                                Log.d(TAG, String.format("Child rect. Left %d, Right %d ", childRect.right,  childRect.left));
+                                // check if event is within child's boundaries
+                                if (childRect.contains((int) event.getX(), (int) event.getY())) {
+                                    Log.d(TAG, "clicked");
+                                    sendColorToPhone(i);
+                                    Intent intent = new Intent(getApplicationContext(), AcceptConnectionActivity.class);
+                                    startActivity(intent);
+                                    return true;
+                                }
+                            }
+                        }
+                        return false;
+                    }
+                });
             }
         });
     }
-
-    private void updateTranscriptionCapability(CapabilityInfo capabilityInfo) {
-        Set<Node> connectedNodes = capabilityInfo.getNodes();
-
-        mNode = pickBestNodeId(connectedNodes);
-    }
-
-    private String pickBestNodeId(Set<Node> nodes) {
-        String bestNodeId = null;
-        // Find a nearby node or pick one arbitrarily
-        for (Node node : nodes) {
-            if (node.isNearby()) {
-                return node.getId();
-            }
-            bestNodeId = node.getId();
-        }
-        return bestNodeId;
-    }
-
-//    private void sendMessage(final String path, String message) {
-//
-//        new Thread( new Runnable() {
-//            @Override
-//            public void run() {
-//                NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.getConnectedNodes(mGoogleApiClient).await();
-//                for (Node node : nodes.getNodes()) {
-//                    Log.d(TAG, node.getId());
-//                    Wearable.MessageApi.sendMessage(
-//                            mGoogleApiClient, node.getId(), path, null).setResultCallback(
-//
-//                            new ResultCallback<MessageApi.SendMessageResult>() {
-//                                @Override
-//                                public void onResult(MessageApi.SendMessageResult sendMessageResult) {
-//
-//                                    if (!sendMessageResult.getStatus().isSuccess()) {
-//                                        Log.e(TAG, "Failed to send message with status code: "
-//                                                + sendMessageResult.getStatus().getStatusCode());
-//                                    }
-//                                }
-//                            }
-//                    );
-////        }
-//                }
-//            }
-//        }).start();
-//    }
 
 //    Will send a server POST request of (color, timestamp, location) -> user_id
     private void sendColorToPhone(ImageView v) {
