@@ -111,7 +111,7 @@ public class MobileMessageService extends WearableListenerService implements Goo
 //        SharedPreferences mPrefs = getSharedPreferences(getString(R.string.USER_DATA), Context.MODE_PRIVATE);
 //        String username = mPrefs.getString("username", "");
         String username = LoginUtils.getLoginToken(this);
-        Call<ContactProfileWrapper> call = service.createContact(new CreateContactRequest(username, "fdsa"));
+        Call<ContactProfileWrapper> call = service.createContact(new CreateContactRequest(username, "bbodien"));
         call.enqueue(new Callback<ContactProfileWrapper>() {
             @Override
             public void onResponse(retrofit.Response<ContactProfileWrapper> response, Retrofit retrofit) {

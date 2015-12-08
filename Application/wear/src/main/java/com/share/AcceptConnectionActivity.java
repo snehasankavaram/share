@@ -17,6 +17,7 @@ import android.support.wearable.view.WatchViewStub;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.Profile;
@@ -30,6 +31,7 @@ public class AcceptConnectionActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accept_connection);
+        final Contact contact = new Contact(new Profile("Ben Bodien", "ben@evertask.com", "925-351-1211","CEO at EverTask"));
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
             @Override
@@ -38,17 +40,26 @@ public class AcceptConnectionActivity extends Activity {
                 accept.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        createNotification();
-                        Contact c = new Contact(new Profile("Brenda Jones", "Brenda@gmail.com", "326-112-2244","CEO"));
+                        createNotification(contact);
                         Intent i = new Intent(getApplicationContext(), ContactActivity.class);
-                        i.putExtra("contact", c);
+                        i.putExtra("contact", contact);
                         startActivity(i);
 
                     }
                 });
-                ImageView i = (ImageView) stub.findViewById(R.id.imageView);
+                TextView textView = (TextView) stub.findViewById(R.id.contact_name);
+                textView.setText(contact.getProfile().getName());
 
-                i.setImageBitmap(getCroppedBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.face4)));
+                ImageView i = (ImageView) stub.findViewById(R.id.imageView);
+                int selected = R.drawable.face4;
+                if (contact.getProfile() != null && contact.getProfile().getName() != null) {
+                    String uri = String.format("@drawable/%s", contact.getProfile().getName().replace(" ", "_").toLowerCase());
+                    int imageResource = getBaseContext().getResources().getIdentifier(uri, null, getBaseContext().getPackageName());
+                    if (imageResource != 0) {
+                        selected = imageResource;
+                    }
+                }
+                i.setImageBitmap(getCroppedBitmap(BitmapFactory.decodeResource(getResources(),selected)));
                 decline = (ImageButton) stub.findViewById(R.id.declineButton);
                 decline.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -64,8 +75,7 @@ public class AcceptConnectionActivity extends Activity {
 //        img.setImageBitmap(getCroppedBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.face3)));
     }
 
-    private void createNotification() {
-        Contact c = new Contact(new Profile("Brenda Jones", "Brenda@gmail.com", "326-112-2244","CEO"));
+    private void createNotification(Contact c) {
         Intent intent = new Intent(getBaseContext(), ContactActivity.class);
         intent.putExtra("contact", c);
         PendingIntent openContacts = PendingIntent.getActivity(getBaseContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
