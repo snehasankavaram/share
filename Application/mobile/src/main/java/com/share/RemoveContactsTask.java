@@ -36,6 +36,7 @@ public class RemoveContactsTask extends AsyncTask<Void,Void,ArrayList<Contact>> 
     protected ArrayList<Contact> doInBackground(Void... params) {
         ArrayList<Contact> deletedContacts = new ArrayList<>();
         for (Contact c: this.contacts) {
+            Log.d("asdf", "" + c.getContactId());
             Call<ContactProfileWrapper> call = service.deleteContact(new DeleteContactRequest(c.getContactId()));
             try{
                 Response<ContactProfileWrapper> response = call.execute();

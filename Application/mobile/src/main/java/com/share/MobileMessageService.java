@@ -174,7 +174,7 @@ public class MobileMessageService extends WearableListenerService implements Goo
                     Gson gson = new Gson();
                     sendMessage("/new_contact", gson.toJson(c));
 
-                    Log.d(TAG, "Added contact: " + contactProfileWrapper.getContact().getProfile().getName());
+                    Log.d(TAG, String.format("Added contact: %s with contactID: %d",contactProfileWrapper.getContact().getProfile().getName(), contactProfileWrapper.getContact().getContactId()));
                     contacts.add(c);
                     LoginUtils.setContacts(getBaseContext(), contacts);
                     Intent intent = new Intent(getApplicationContext(), ContactPageActivity.class);

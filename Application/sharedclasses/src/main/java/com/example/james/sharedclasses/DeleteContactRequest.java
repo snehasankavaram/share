@@ -18,6 +18,7 @@ public class DeleteContactRequest {
     public void setId(int id) {
         this.id = id;
     }
+
     public DeleteContactRequest(int id) {
         this.id = id;
     }

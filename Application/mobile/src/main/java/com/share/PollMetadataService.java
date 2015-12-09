@@ -98,15 +98,16 @@ public class PollMetadataService extends Service {
             if (responseWrapper != null) {
                 List<ContactProfileWrapper> contactsWrapper =  responseWrapper.getContacts();
                 for (ContactProfileWrapper contactWrapper: contactsWrapper) {
-                    String notes = contactWrapper.getContact().getNotes();
+                    Contact c = contactWrapper.getContact();
                     Profile p = contactWrapper.getProfile();
                     ArrayList<File> files = contactWrapper.getFiles();
                     Log.d(TAG, p.getName());
                     for (File f : files) {
                         Log.d(TAG, "Get contacts. Filename: " + f.getFileName());
                     }
-
-                    contactsList.add(new Contact(p, notes, files));
+                    c.setFiles(files);
+                    c.setProfile(p);
+                    contactsList.add(c);
                 }
             }
 

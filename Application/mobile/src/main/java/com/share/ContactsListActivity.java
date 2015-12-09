@@ -87,6 +87,7 @@ public class ContactsListActivity extends AppCompatActivity implements
                                 ArrayList<Contact> contactsToDelete = new ArrayList<>();
                                 for (int position : reverseSortedPositions) {
                                     final Contact c = adapter.getItem(position);
+                                    Log.d(TAG, String.format("Contact id to delete: %d", c.getContactId()));
                                     adapter.remove(c);
                                     contactsToDelete.add(c);
                                 }
@@ -213,6 +214,9 @@ public class ContactsListActivity extends AppCompatActivity implements
         Log.d(TAG, "on shared pref called on key: " + key);
         if (key.equals(LoginUtils.CONTACTS_KEY)) {
             ArrayList<Contact> contacts = LoginUtils.getContacts(this);
+            for (Contact c : contacts) {
+                Log.d(TAG, String.format("Name: %s id: %d", c.getProfile().getName(), c.getContactId()));
+            }
             adapter.clear();
             adapter.addAll(contacts);
             adapter.notifyDataSetChanged();
