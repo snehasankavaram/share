@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.FileMetadataWrapper;
-import com.example.james.sharedclasses.GetUserRequestWrapper;
 import com.example.james.sharedclasses.Profile;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -52,18 +51,6 @@ public class DataLayerUtil {
         sendGenericToWear(mGoogleApiClient, putDataMapReq, TAG);
     }
 
-    public static void sendNewConnectionProfileToWear(GoogleApiClient mGoogleApiClient, GetUserRequestWrapper getUserRequest, final String TAG) {
-        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/new_connection");
-        putDataMapReq.getDataMap().putDataMap("connection", getUserRequest.putToDataMap(new DataMap()));
-        sendGenericToWear(mGoogleApiClient, putDataMapReq, TAG);
-    }
-
-    public static void sendNewContactToWear(GoogleApiClient mGoogleApiClient, Contact contact, final String TAG) {
-        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/new_contact");
-        putDataMapReq.getDataMap().putDataMap("contact", contact.putToDataMap(new DataMap()));
-        sendGenericToWear(mGoogleApiClient, putDataMapReq, TAG);
-    }
-
     public static void sendGenericToWear(GoogleApiClient mGoogleApiClient, PutDataMapRequest putDataMapReq, final String TAG) {
         PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
         PendingResult<DataApi.DataItemResult> pendingResult =
@@ -77,4 +64,16 @@ public class DataLayerUtil {
             }
         });
     }
+
+//    public static void sendNewConnectionProfileToWear(GoogleApiClient mGoogleApiClient, GetUserRequestWrapper getUserRequest, final String TAG) {
+//        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/new_connection");
+//        putDataMapReq.getDataMap().putDataMap("connection", getUserRequest.putToDataMap(new DataMap()));
+//        sendGenericToWear(mGoogleApiClient, putDataMapReq, TAG);
+//    }
+//
+//    public static void sendNewContactToWear(GoogleApiClient mGoogleApiClient, Contact contact, final String TAG) {
+//        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/new_contact");
+//        putDataMapReq.getDataMap().putDataMap("contact", contact.putToDataMap(new DataMap()));
+//        sendGenericToWear(mGoogleApiClient, putDataMapReq, TAG);
+//    }
 }

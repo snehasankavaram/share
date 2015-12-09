@@ -15,7 +15,7 @@
         android:theme="@style/Theme.AppCompat.Light">
         <activity
             android:name=".LoginActivity"
-            android:label="@string/title_activity_login"
+            android:label="Share"
             android:theme="@style/Theme.AppCompat.Light">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

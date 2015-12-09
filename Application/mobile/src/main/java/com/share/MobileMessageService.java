@@ -21,9 +21,13 @@ import com.example.james.sharedclasses.ServerEndpoint;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.MessageEvent;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
+import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.ResponseBody;
 import com.squareup.okhttp.logging.HttpLoggingInterceptor;
@@ -96,6 +100,7 @@ public class MobileMessageService extends WearableListenerService implements Goo
         }
         else if ( messageEvent.getPath().equalsIgnoreCase( ACCEPTED_CONNECTION )) {
             String their_username = new String(messageEvent.getData(), StandardCharsets.UTF_8);
+            Log.d(TAG, String.format("Adding %s as a contact", their_username));
             addContact(their_username);
         }
         else if ( messageEvent.getPath().equalsIgnoreCase( CANCELED)) {
@@ -165,7 +170,9 @@ public class MobileMessageService extends WearableListenerService implements Goo
                     Contact c = contactProfileWrapper.getContact();
                     c.setProfile(contactProfileWrapper.getProfile());
                     c.setFiles(contactProfileWrapper.getFiles());
-                    DataLayerUtil.sendNewContactToWear(mGoogleApiClient, c, TAG);
+//                    DataLayerUtil.sendNewContactToWear(mGoogleApiClient, c, TAG);
+                    Gson gson = new Gson();
+                    sendMessage("/new_contact", gson.toJson(c));
 
                     Log.d(TAG, "Added contact: " + contactProfileWrapper.getContact().getProfile().getName());
                     contacts.add(c);
@@ -267,7 +274,9 @@ public class MobileMessageService extends WearableListenerService implements Goo
         protected void onPostExecute(GetUserRequestWrapper result) {
             if (result != null) {
                 Log.d(TAG, "Get Connection task postExecute called");
-                DataLayerUtil.sendNewConnectionProfileToWear(mGoogleApiClient, result, TAG);
+                Gson gson = new Gson();
+                sendMessage("/new_connection", gson.toJson(result));
+//                DataLayerUtil.sendNewConnectionProfileToWear(mGoogleApiClient, result, TAG);
             }
         }
     }
@@ -305,90 +314,18 @@ public class MobileMessageService extends WearableListenerService implements Goo
         return null;
     }
 
-
-//    private void connect2Server () {
-//
-//        StringRequest stringRequest = new StringRequest(Request.Method.GET, urlbase + "users/show" + "?username=sarahs",
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
-//                        Log.d("MobileMessageService", "users/show: " + response);
-//                        if (!response.equals("{\"user\":null}")) {
-//                            Log.d("sending string", "request 2");
-//                            StringRequest stringRequest2 = new StringRequest(Request.Method.POST, urlbase + "connection/create"
-//                                    + "?username=sarahs&latitude=65.9667&longitude=-18.5333&color=" + color,
-//                                    new Response.Listener<String>() {
-//                                        @Override
-//                                        public void onResponse(String response) {
-//                                            Log.d("sending string", "request 3");
-//                                            StringRequest stringRequest3 = new StringRequest(Request.Method.POST, urlbase + "connection/create"
-//                                                    + "?username=dylan&latitude=65.9667&longitude=-18.5333&color=" + color,
-//                                                    new Response.Listener<String>() {
-//                                                        @Override
-//                                                        public void onResponse(String response) {
-//                                                            Log.d("sending string", "request 4");
-//                                                            //TODO: handshake while loop
-//                                                            String url = urlbase + "connection/show?username=sarahs&color=" + color;
-//                                                            StringRequest stringRequest4 = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-//
-//                                                                @Override
-//                                                                public void onResponse(String response) {
-//                                                                    Log.d("Connection show", response);
-//                                                                    try {
-//                                                                        JSONObject jsonObject = new JSONObject(response);
-//                                                                        JSONArray contacts = jsonObject.getJSONArray("connection");
-//                                                                        for (int i = 0; i < contacts.length(); i++) {
-//                                                                            JSONObject contact = contacts.getJSONObject(i);
-//                                                                            Log.d("contact", contact.getString("username"));
-//                                                                            if (contact.getString("username").equals("dylan")) {
-//                                                                                String name = contact.getString("name");
-//                                                                                String occupation = contact.getString("occupation");
-//                                                                                Profile p = new Profile(name, "email", "phone", occupation);
-//                                                                                Contact c = new Contact(p, "");
-//                                                                                Intent intent = new Intent(getApplicationContext(), ContactPageActivity.class);
-//                                                                                intent.putExtra("contact", c);
-//                                                                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                                                                                startActivity(intent);
-//                                                                                break;
-//                                                                            }
-//                                                                        }
-//                                                                    }
-//                                                                    catch (JSONException e) {
-//                                                                        e.printStackTrace();
-//                                                                    }
-//                                                                }
-//                                                            }, new Response.ErrorListener() {
-//
-//                                                                @Override
-//                                                                public void onErrorResponse(VolleyError error) {
-//
-//                                                                }
-//                                                            });
-//                                                            queue.add(stringRequest4);
-//
-//                                                        }
-//                                                    }, new Response.ErrorListener() {
-//                                                @Override
-//                                                public void onErrorResponse(VolleyError error) {}
-//                                            });
-//                                            queue.add(stringRequest3);
-//                                        }
-//                                    }, new Response.ErrorListener() {
-//                                @Override
-//                                public void onErrorResponse(VolleyError error) {}
-//                            });
-//                            queue.add(stringRequest2);
-//                        } else {
-//                            Log.d("this is bad", response);
-//                        }
-//                    }
-//                }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {}
-//        });
-//        queue.add(stringRequest);
-//
-//    }
-
+    private void sendMessage( final String path, final String text ) {
+        new Thread( new Runnable() {
+            @Override
+            public void run() {
+                mGoogleApiClient.connect();
+                NodeApi.GetConnectedNodesResult nodes = Wearable.NodeApi.getConnectedNodes( mGoogleApiClient ).await();
+                for(Node node : nodes.getNodes()) {
+                    MessageApi.SendMessageResult result = Wearable.MessageApi.sendMessage(
+                            mGoogleApiClient, node.getId(), path, text.getBytes() ).await();
+                }
+            }
+        }).start();
+    }
 
 }

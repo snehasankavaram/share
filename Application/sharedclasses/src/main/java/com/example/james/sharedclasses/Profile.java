@@ -121,4 +121,8 @@ public class Profile implements Serializable {
         this.occupation = occupation;
     }
 
+    public String toString() {
+        return String.format("Name %s, email %s, phone %s", this.name, this.email, this.phone);
+    }
+
 }

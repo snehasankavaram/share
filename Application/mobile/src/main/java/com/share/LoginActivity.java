@@ -380,6 +380,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                     ArrayList<FileMetadataWrapper> fileMetadata = getFileMetadata(username);
                     LoginUtils.setFileMetadata(getBaseContext(), fileMetadata);
+                    DataLayerUtil.sendFileMetadataToWear(mGoogleApiClient, fileMetadata, TAG);
                     return 0;
                 }
                 return 2;

@@ -4,7 +4,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by james on 12/5/15.
@@ -12,7 +11,7 @@ import java.util.List;
 public class GetFilesRequestWrapper {
     @SerializedName("files")
     @Expose
-    private List<FileMetadataWrapper> files = new ArrayList<>();
+    private ArrayList<FileMetadataWrapper> files = new ArrayList<>();
 
     /**
      * No args constructor for use in serialization
@@ -22,15 +21,15 @@ public class GetFilesRequestWrapper {
 
     }
 
-    public GetFilesRequestWrapper(List<FileMetadataWrapper> files) {
+    public GetFilesRequestWrapper(ArrayList<FileMetadataWrapper> files) {
         this.files = files;
     }
 
-    public List<FileMetadataWrapper> getFiles() {
+    public ArrayList<FileMetadataWrapper> getFiles() {
         return files;
     }
 
-    public void setFiles(List<FileMetadataWrapper> files) {
+    public void setFiles(ArrayList<FileMetadataWrapper> files) {
         this.files = files;
     }
 

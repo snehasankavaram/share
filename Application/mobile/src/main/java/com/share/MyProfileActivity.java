@@ -16,7 +16,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -60,7 +59,7 @@ public class MyProfileActivity extends AppCompatActivity {
 //        Profile myProfile = gson.fromJson(parser.parse(mPrefs.getString("profile", "")).getAsJsonObject(), Profile.class);
         Profile myProfile = LoginUtils.getProfile(this);
         // Set our profile information.
-                ((TextView) findViewById(R.id.name)).setText(myProfile.getName());
+        ((TextView) findViewById(R.id.name)).setText(myProfile.getName());
         ((TextView) findViewById(R.id.occupation)).setText(myProfile.getOccupation());
         ((TextView) findViewById(R.id.phone)).setText(myProfile.getPhone());
         ((TextView) findViewById(R.id.email)).setText(myProfile.getEmail());

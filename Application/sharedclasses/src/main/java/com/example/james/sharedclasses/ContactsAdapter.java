@@ -26,10 +26,12 @@ public class ContactsAdapter extends ArrayAdapter<Contact>{
         TextView occupation;
         ImageView image;
     }
+    private Context context;
     public ArrayList<Contact> contacts;
 
     public ContactsAdapter(Context context, ArrayList<Contact> contacts) {
         super(context, R.layout.contact_item, contacts);
+        this.context = context;
         this.contacts = contacts;
     }
 
@@ -56,6 +58,13 @@ public class ContactsAdapter extends ArrayAdapter<Contact>{
 
         int [] images = {R.drawable.face1, R.drawable.face2, R.drawable.face3, R.drawable.face4};
         int selected = images[contact.getProfile().getName().charAt(0) % 4];
+        if (contact.getProfile().getName() != null) {
+            String uri = String.format("@drawable/%s", contact.getProfile().getName().replace(" ", "_").toLowerCase());
+            int imageResource = context.getResources().getIdentifier(uri, null, context.getPackageName());
+            if (imageResource != 0) {
+                selected = imageResource;
+            }
+        }
         viewHolder.image.setImageBitmap(getCroppedBitmap(BitmapFactory.decodeResource(parent.getResources(), selected)));
         // Return the completed view to render on screen
         return convertView;

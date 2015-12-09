@@ -35,12 +35,18 @@ import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
-public class AcceptConnectionActivity extends Activity implements DataApi.DataListener{
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+
+public class AcceptConnectionActivity extends Activity implements DataApi.DataListener, MessageApi.MessageListener{
 
     private ImageButton accept;
     private ImageButton decline;
@@ -76,7 +82,8 @@ public class AcceptConnectionActivity extends Activity implements DataApi.DataLi
                     }
                 })
                 .build();
-        Wearable.DataApi.addListener(mGoogleApiClient, this);
+//        Wearable.DataApi.addListener(mGoogleApiClient, this);
+        Wearable.MessageApi.addListener(mGoogleApiClient, this);
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Waiting for connection to accept");
@@ -217,5 +224,24 @@ public class AcceptConnectionActivity extends Activity implements DataApi.DataLi
                 }
             }
         }).start();
+    }
+
+
+    @Override
+    public void onMessageReceived(MessageEvent messageEvent) {
+        if( messageEvent.getPath().equalsIgnoreCase( "/new_contact" ) ) {
+            Log.d(TAG, "Data change called on contact accept");
+            if (progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+            String newContact = new String(messageEvent.getData(), StandardCharsets.UTF_8);
+            Gson gson = new Gson();
+            Type type = new TypeToken<Contact>(){}.getType();
+            Contact contact = gson.fromJson(newContact, type);
+            createNotification(contact);
+            Intent i = new Intent(getApplicationContext(), ContactActivity.class);
+            i.putExtra("contact", contact);
+            startActivity(i);
+        }
     }
 }

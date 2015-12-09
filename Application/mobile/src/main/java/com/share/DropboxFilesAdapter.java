@@ -13,11 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.dropbox.client2.DropboxAPI;
 import com.example.james.sharedclasses.LoginUtils;
@@ -41,6 +39,7 @@ public class DropboxFilesAdapter extends ArrayAdapter<DropboxAPI.Entry> {
     private Context context;
     private Retrofit retrofit;
     private DropboxAPI mApi;
+
     public DropboxFilesAdapter(Context context, ArrayList<DropboxAPI.Entry> files, Retrofit retrofit, DropboxAPI mApi) {
         super(context, R.layout.dropbox_file, files);
         this.context = context;
@@ -110,7 +109,7 @@ public class DropboxFilesAdapter extends ArrayAdapter<DropboxAPI.Entry> {
                     public void onClick(DialogInterface dialog, int id) {
                         final String username = LoginUtils.getLoginToken(getContext());
                         Log.d(TAG, "Username: " + username);
-                        CreateSharedLinkTask task = new CreateSharedLinkTask(retrofit, mApi, entry.path, username, entry.fileName());
+                        CreateSharedLinkTask task = new CreateSharedLinkTask(context, retrofit, mApi, entry.path, username, entry.fileName());
                         task.execute();
                     }
                 })

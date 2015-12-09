@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.wearable.view.WatchViewStub;
 import android.util.Log;
@@ -17,21 +16,18 @@ import android.widget.Toast;
 
 import com.example.james.sharedclasses.GetUserRequestWrapper;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.wearable.DataApi;
-import com.google.android.gms.wearable.DataEvent;
-import com.google.android.gms.wearable.DataEventBuffer;
-import com.google.android.gms.wearable.DataItem;
-import com.google.android.gms.wearable.DataMap;
-import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
-import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
-public class ColorPickerActivity extends Activity implements DataApi.DataListener {
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+
+public class ColorPickerActivity extends Activity implements MessageApi.MessageListener {
     ImageView[] imageViews = new ImageView[4];
 
     String mNode; // the connected device to send the message to
@@ -84,7 +80,8 @@ public class ColorPickerActivity extends Activity implements DataApi.DataListene
         progressDialog.setCanceledOnTouchOutside(true);
         progressDialog.setCancelable(true);
 
-        Wearable.DataApi.addListener(mGoogleApiClient, this);
+//        Wearable.DataApi.addListener(mGoogleApiClient, this);
+        Wearable.MessageApi.addListener(mGoogleApiClient, this);
 
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
@@ -171,39 +168,60 @@ public class ColorPickerActivity extends Activity implements DataApi.DataListene
         }).start();
     }
 
-
     @Override
-    public void onDataChanged(DataEventBuffer dataEvents) {
-        for (DataEvent event : dataEvents) {
-            if (event.getType() == DataEvent.TYPE_CHANGED) {
-                DataItem item = event.getDataItem();
-                if (item.getUri().getPath().compareTo("/new_connection") == 0) {
-                    Log.d(TAG, "Data change called on new connection");
-                    if (progressDialog.isShowing()) {
-                        progressDialog.dismiss();
-                    }
-                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
-                    DataMap dataMapNewConnection = dataMap.getDataMap("connection");
-                    GetUserRequestWrapper userRequest = new GetUserRequestWrapper(dataMapNewConnection);
-                    Uri.Builder uri = new Uri.Builder().scheme(PutDataRequest.WEAR_URI_SCHEME).path("/new_connection");
-                    mGoogleApiClient.connect();
-                    PendingResult<DataApi.DeleteDataItemsResult> result = Wearable.DataApi.deleteDataItems(mGoogleApiClient, uri.build(), DataApi.FILTER_PREFIX);
-                    Log.d(TAG, uri.build().toString());
-                    result.setResultCallback(new ResultCallback<DataApi.DeleteDataItemsResult>() {
-
-                        @Override
-                        public void onResult(DataApi.DeleteDataItemsResult deleteDataItemsResult) {
-                            Log.d(TAG, "deleted");
-                        }
-                    });
-
-                    Intent intent = new Intent(getApplicationContext(), AcceptConnectionActivity.class);
-                    intent.putExtra("profile", userRequest.getProfile());
-                    intent.putExtra("user", userRequest.getUser());
-
-                    startActivity(intent);
-                }
+    public void onMessageReceived(MessageEvent messageEvent) {
+        if( messageEvent.getPath().equalsIgnoreCase( "/new_connection" ) ) {
+            Log.d(TAG, "Data change called on new connection");
+            if (progressDialog.isShowing()) {
+                progressDialog.dismiss();
             }
+            String newConnection = new String(messageEvent.getData(), StandardCharsets.UTF_8);
+            Gson gson = new Gson();
+            Type type = new TypeToken<GetUserRequestWrapper>(){}.getType();
+            GetUserRequestWrapper userRequest = gson.fromJson(newConnection, type);
+
+            Intent intent = new Intent(getApplicationContext(), AcceptConnectionActivity.class);
+            intent.putExtra("profile", userRequest.getProfile());
+            intent.putExtra("user", userRequest.getUser());
+
+            startActivity(intent);
+
         }
     }
+
+//
+//    @Override
+//    public void onDataChanged(DataEventBuffer dataEvents) {
+//        for (DataEvent event : dataEvents) {
+//            if (event.getType() == DataEvent.TYPE_CHANGED) {
+//                DataItem item = event.getDataItem();
+//                if (item.getUri().getPath().compareTo("/new_connection") == 0) {
+//                    Log.d(TAG, "Data change called on new connection");
+//                    if (progressDialog.isShowing()) {
+//                        progressDialog.dismiss();
+//                    }
+//                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
+//                    DataMap dataMapNewConnection = dataMap.getDataMap("connection");
+//                    GetUserRequestWrapper userRequest = new GetUserRequestWrapper(dataMapNewConnection);
+//                    Uri.Builder uri = new Uri.Builder().scheme(PutDataRequest.WEAR_URI_SCHEME).path("/new_connection");
+//                    mGoogleApiClient.connect();
+//                    PendingResult<DataApi.DeleteDataItemsResult> result = Wearable.DataApi.deleteDataItems(mGoogleApiClient, uri.build(), DataApi.FILTER_PREFIX);
+//                    Log.d(TAG, uri.build().toString());
+//                    result.setResultCallback(new ResultCallback<DataApi.DeleteDataItemsResult>() {
+//
+//                        @Override
+//                        public void onResult(DataApi.DeleteDataItemsResult deleteDataItemsResult) {
+//                            Log.d(TAG, "deleted");
+//                        }
+//                    });
+//
+//                    Intent intent = new Intent(getApplicationContext(), AcceptConnectionActivity.class);
+//                    intent.putExtra("profile", userRequest.getProfile());
+//                    intent.putExtra("user", userRequest.getUser());
+//
+//                    startActivity(intent);
+//                }
+//            }
+//        }
+//    }
 }

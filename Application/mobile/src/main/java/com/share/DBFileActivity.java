@@ -81,8 +81,9 @@ public class DBFileActivity extends Activity {
         for (FileMetadataWrapper fileMetadata : filesMetadata) {
             String currLocalPath = fileMetadata.getFile().getLocalPath();
             String currFileName = fileMetadata.getFile().getFileName();
-
+            Log.d(TAG, String.format("currLocalPath: %s currFileName %s", currLocalPath, currFileName));
             if (currLocalPath.equals(localPath) && currFileName.equals(fileName)) {
+                Log.d(TAG, String.format("view count: %d", fileMetadata.getFile().getViewCount()));
                 MetadataAdapter adapter = new MetadataAdapter(this, fileMetadata.getMetadata());
                 listView.setAdapter(adapter);
                 textView.setText(fileMetadata.getFile().getViewCount() + "");
