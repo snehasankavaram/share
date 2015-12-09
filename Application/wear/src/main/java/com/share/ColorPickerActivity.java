@@ -185,11 +185,11 @@ public class ColorPickerActivity extends Activity implements DataApi.DataListene
                     DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
                     DataMap dataMapNewConnection = dataMap.getDataMap("connection");
                     GetUserRequestWrapper userRequest = new GetUserRequestWrapper(dataMapNewConnection);
-                    Uri.Builder uri = new Uri.Builder().scheme(PutDataRequest.WEAR_URI_SCHEME).path("/new_contact");
+                    Uri.Builder uri = new Uri.Builder().scheme(PutDataRequest.WEAR_URI_SCHEME).path("/new_connection");
                     mGoogleApiClient.connect();
                     PendingResult<DataApi.DeleteDataItemsResult> result = Wearable.DataApi.deleteDataItems(mGoogleApiClient, uri.build(), DataApi.FILTER_PREFIX);
                     Log.d(TAG, uri.build().toString());
-                    result.setResultCallback(new ResultCallback<DataApi.DeleteDataItemsResult>(){
+                    result.setResultCallback(new ResultCallback<DataApi.DeleteDataItemsResult>() {
 
                         @Override
                         public void onResult(DataApi.DeleteDataItemsResult deleteDataItemsResult) {

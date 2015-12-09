@@ -11,6 +11,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -25,6 +26,8 @@ import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.Profile;
 import com.example.james.sharedclasses.User;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
@@ -34,6 +37,7 @@ import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
+import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
 public class AcceptConnectionActivity extends Activity implements DataApi.DataListener{
@@ -178,6 +182,19 @@ public class AcceptConnectionActivity extends Activity implements DataApi.DataLi
                     DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
                     DataMap dataMapNewConnection = dataMap.getDataMap("contact");
                     Contact contact = new Contact(dataMapNewConnection);
+
+                    Uri.Builder uri = new Uri.Builder().scheme(PutDataRequest.WEAR_URI_SCHEME).path("/new_contact");
+                    mGoogleApiClient.connect();
+                    PendingResult<DataApi.DeleteDataItemsResult> result = Wearable.DataApi.deleteDataItems(mGoogleApiClient, uri.build(), DataApi.FILTER_PREFIX);
+                    Log.d(TAG, uri.build().toString());
+                    result.setResultCallback(new ResultCallback<DataApi.DeleteDataItemsResult>(){
+
+                        @Override
+                        public void onResult(DataApi.DeleteDataItemsResult deleteDataItemsResult) {
+                            Log.d(TAG, "deleted");
+                        }
+                    });
+
                     createNotification(contact);
                     Intent i = new Intent(getApplicationContext(), ContactActivity.class);
                     i.putExtra("contact", contact);

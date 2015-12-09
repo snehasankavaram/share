@@ -50,7 +50,7 @@ public class ContactsAdapter extends ArrayAdapter<Contact> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         // Populate the data into the template view using the data object
-        viewHolder.name.setText(contact.getProfile().getName());
+        viewHolder.name.setText(contact.getProfile().getName().split("\\s+")[0]);
 
         int [] images = {com.example.james.sharedclasses.R.drawable.face1, com.example.james.sharedclasses.R.drawable.face2, com.example.james.sharedclasses.R.drawable.face3, com.example.james.sharedclasses.R.drawable.face4};
         int selected = images[contact.getProfile().getName().charAt(0) % 4];
