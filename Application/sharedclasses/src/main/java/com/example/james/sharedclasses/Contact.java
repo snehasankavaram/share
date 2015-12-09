@@ -22,6 +22,10 @@ public class Contact implements Serializable {
     @Expose
     private ArrayList<File> files;
 
+    @SerializedName("id")
+    @Expose
+    private int contactId;
+
     /**
      * No args constructor for use in serialization
      *
@@ -65,6 +69,14 @@ public class Contact implements Serializable {
 
     public void setNotes (String notes) {this.notes = notes;}
 
+    public int getContactId() {
+        return contactId;
+    }
+
+    public void setContactId(int contactId) {
+        this.contactId = contactId;
+    }
+
     public DataMap putToDataMap(DataMap map) {
         map.putDataMap("profile", this.profile.putToDataMap(new DataMap()));
         map.putString("notes", this.notes);
@@ -85,5 +97,4 @@ public class Contact implements Serializable {
     public void setFiles(ArrayList<File> files) {
         this.files = files;
     }
-
 }

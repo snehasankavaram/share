@@ -17,7 +17,6 @@ import com.example.james.sharedclasses.CreateContactRequest;
 import com.example.james.sharedclasses.GetConnectionEstablishedWrapper;
 import com.example.james.sharedclasses.GetUserRequestWrapper;
 import com.example.james.sharedclasses.LoginUtils;
-import com.example.james.sharedclasses.Profile;
 import com.example.james.sharedclasses.ServerEndpoint;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -153,8 +152,6 @@ public class MobileMessageService extends WearableListenerService implements Goo
 
     private void addContact (String contact_username) {
         ServerEndpoint service = retrofit.create(ServerEndpoint.class);
-//        SharedPreferences mPrefs = getSharedPreferences(getString(R.string.USER_DATA), Context.MODE_PRIVATE);
-//        String username = mPrefs.getString("username", "");
         String username = LoginUtils.getLoginToken(this);
         Call<ContactProfileWrapper> call = service.createContact(new CreateContactRequest(username, contact_username));
         call.enqueue(new Callback<ContactProfileWrapper>() {
@@ -201,7 +198,7 @@ public class MobileMessageService extends WearableListenerService implements Goo
 
     }
 
-    public class GetConnectionTask extends AsyncTask<Void, Void, Profile> {
+    public class GetConnectionTask extends AsyncTask<Void, Void, GetUserRequestWrapper> {
         private String color;
         private ServerEndpoint serverEndpoint;
         public GetConnectionTask(ServerEndpoint serverEndpoint, String color) {
@@ -209,7 +206,7 @@ public class MobileMessageService extends WearableListenerService implements Goo
             this.serverEndpoint = serverEndpoint;
         }
         @Override
-        protected Profile doInBackground(Void... params) {
+        protected GetUserRequestWrapper doInBackground(Void... params) {
             boolean createdConnection = false;
             while (true) {
                 if (isCancelled()) {
@@ -240,7 +237,7 @@ public class MobileMessageService extends WearableListenerService implements Goo
                         Response<GetUserRequestWrapper> response = requestWrapper.execute();
                         if (response.isSuccess()) {
                             GetUserRequestWrapper userRequest = response.body();
-                            return userRequest.getProfile();
+                            return userRequest;
                         }
                         else {
                             int statusCode = response.code();
@@ -267,7 +264,7 @@ public class MobileMessageService extends WearableListenerService implements Goo
         }
 
         @Override
-        protected void onPostExecute(Profile result) {
+        protected void onPostExecute(GetUserRequestWrapper result) {
             if (result != null) {
                 Log.d(TAG, "Get Connection task postExecute called");
                 DataLayerUtil.sendNewConnectionProfileToWear(mGoogleApiClient, result, TAG);

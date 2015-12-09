@@ -16,6 +16,7 @@ import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.ContactsAdapter;
 import com.example.james.sharedclasses.FileMetadataWrapper;
 import com.example.james.sharedclasses.LoginUtils;
+import com.example.james.sharedclasses.ServerEndpoint;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.Node;
@@ -31,6 +32,9 @@ import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 
 import java.util.ArrayList;
 
+import retrofit.GsonConverterFactory;
+import retrofit.Retrofit;
+
 public class ContactsListActivity extends AppCompatActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -38,6 +42,7 @@ public class ContactsListActivity extends AppCompatActivity implements
     private GoogleApiClient mGoogleApiClient;
     private static final String CONTACTS_KEY = "com.example.key.contacts";
     private static final String TAG = "ContactsListActivity";
+    private Retrofit retrofit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +56,12 @@ public class ContactsListActivity extends AppCompatActivity implements
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         client.interceptors().add(interceptor);
 
+        retrofit = new Retrofit.Builder()
+                .baseUrl(getString(R.string.WEBSITE_URL))
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build();
+
         Intent messagesServiceIntent = new Intent(getApplicationContext(), MobileMessageService.class);
         startService(messagesServiceIntent);
         Intent pollMetadataServiceIntent = new Intent(getApplicationContext(), PollMetadataService.class);
@@ -61,6 +72,33 @@ public class ContactsListActivity extends AppCompatActivity implements
 
         ListView listView = (ListView) findViewById(R.id.list);
         listView.setAdapter(adapter);
+        SwipeDismissListViewTouchListener touchListener =
+                new SwipeDismissListViewTouchListener(
+                        listView,
+                        new SwipeDismissListViewTouchListener.DismissCallbacks() {
+                            @Override
+                            public boolean canDismiss(int position) {
+                                return true;
+                            }
+
+                            @Override
+                            public void onDismiss(ListView listView, int[] reverseSortedPositions) {
+                                ServerEndpoint service = retrofit.create(ServerEndpoint.class);
+                                ArrayList<Contact> contactsToDelete = new ArrayList<>();
+                                for (int position : reverseSortedPositions) {
+                                    final Contact c = adapter.getItem(position);
+                                    adapter.remove(c);
+                                    contactsToDelete.add(c);
+                                }
+                                RemoveContactsTask task = new RemoveContactsTask(ContactsListActivity.this, contactsToDelete, service);
+                                task.execute();
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
+        listView.setOnTouchListener(touchListener);
+        // Setting this scroll listener is required to ensure that during ListView scrolling,
+        // we don't look for swipes.
+        listView.setOnScrollListener(touchListener.makeScrollListener());
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

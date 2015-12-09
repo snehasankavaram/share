@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.Profile;
+import com.example.james.sharedclasses.User;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
@@ -40,6 +41,7 @@ public class AcceptConnectionActivity extends Activity implements DataApi.DataLi
     private ImageButton accept;
     private ImageButton decline;
     private Profile profile;
+    private User user;
     private String TAG = "AcceptConnectionActivity";
     private static final String ACCEPTED_CONNECTION = "/ACCEPTED_CONNECTION";
     GoogleApiClient mGoogleApiClient;
@@ -50,6 +52,7 @@ public class AcceptConnectionActivity extends Activity implements DataApi.DataLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accept_connection);
         profile = (Profile) getIntent().getSerializableExtra("profile");
+        user = (User) getIntent().getSerializableExtra("user");
         if (profile == null) {
             Log.d(TAG, "Profile is null");
             profile = new Profile("Ben Bodien", "ben@evertask.com", "925-351-1211","CEO at EverTask");
@@ -83,7 +86,7 @@ public class AcceptConnectionActivity extends Activity implements DataApi.DataLi
                     @Override
                     public void onClick(View v) {
                         progressDialog.show();
-                        sendMessage(ACCEPTED_CONNECTION, profile.getName());
+                        sendMessage(ACCEPTED_CONNECTION, user.getUsername());
                     }
                 });
                 TextView textView = (TextView) stub.findViewById(R.id.contact_name);

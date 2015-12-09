@@ -31,13 +31,7 @@ public class DataLayerListenerService extends WearableListenerService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        return START_STICKY;
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Log.d(TAG, "on create called");
+        Log.d(TAG, "on start command");
         mGoogleApiClient = new GoogleApiClient.Builder( this )
                 .addApi( Wearable.API )
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
@@ -51,8 +45,8 @@ public class DataLayerListenerService extends WearableListenerService {
                     }
                 })
                 .build();
-
         mGoogleApiClient.connect();
+        return START_STICKY;
     }
 
     @Override

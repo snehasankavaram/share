@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.example.james.sharedclasses.Contact;
 import com.example.james.sharedclasses.FileMetadataWrapper;
+import com.example.james.sharedclasses.GetUserRequestWrapper;
 import com.example.james.sharedclasses.Profile;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -51,9 +52,9 @@ public class DataLayerUtil {
         sendGenericToWear(mGoogleApiClient, putDataMapReq, TAG);
     }
 
-    public static void sendNewConnectionProfileToWear(GoogleApiClient mGoogleApiClient, Profile profile, final String TAG) {
+    public static void sendNewConnectionProfileToWear(GoogleApiClient mGoogleApiClient, GetUserRequestWrapper getUserRequest, final String TAG) {
         PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/new_connection");
-        putDataMapReq.getDataMap().putDataMap("profile", profile.putToDataMap(new DataMap()));
+        putDataMapReq.getDataMap().putDataMap("connection", getUserRequest.putToDataMap(new DataMap()));
         sendGenericToWear(mGoogleApiClient, putDataMapReq, TAG);
     }
 

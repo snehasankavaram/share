@@ -1,9 +1,12 @@
 package com.example.james.sharedclasses;
 
+import com.google.android.gms.wearable.DataMap;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     @SerializedName("username")
     @Expose
     private String username;
@@ -32,6 +35,16 @@ public class User {
         this.password = password;
     }
 
+    public User(DataMap map) {
+        this.username = map.getString("user");
+        this.password = map.getString("password");
+    }
+
+    public DataMap putToDataMap(DataMap map) {
+        map.putString("user", this.username);
+        map.putString("password", this.password);
+        return map;
+    }
     /**
      *
      * @return

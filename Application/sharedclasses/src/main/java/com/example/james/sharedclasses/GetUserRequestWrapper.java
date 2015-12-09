@@ -1,5 +1,6 @@
 package com.example.james.sharedclasses;
 
+import com.google.android.gms.wearable.DataMap;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -21,6 +22,17 @@ public class GetUserRequestWrapper {
     public GetUserRequestWrapper(User user, Profile profile) {
         this.user = user;
         this.profile = profile;
+    }
+
+    public GetUserRequestWrapper(DataMap dataMap) {
+        this.user = new User(dataMap.getDataMap("user"));
+        this.profile = new Profile(dataMap.getDataMap("profile"));
+    }
+
+    public DataMap putToDataMap(DataMap dataMap) {
+        dataMap.putDataMap("user", this.user.putToDataMap(new DataMap()));
+        dataMap.putDataMap("profile", this.profile.putToDataMap(new DataMap()));
+        return dataMap;
     }
 
     /**

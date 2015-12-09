@@ -19,6 +19,9 @@ public interface ServerEndpoint {
     @POST("/contacts/create")
     Call<ContactProfileWrapper> createContact(@Body CreateContactRequest request);
 
+    @POST("/contacts/delete")
+    Call<ContactProfileWrapper> deleteContact(@Body DeleteContactRequest request);
+
     @GET("/contacts/index")
     Call<GetContactsRequestWrapper> getContactsForUser(@Query("username") String username);
 
@@ -36,5 +39,6 @@ public interface ServerEndpoint {
 
     @GET("/connection/show")
     Call<GetConnectionEstablishedWrapper> checkConnectionEstablished(@Query("username") String username, @Query("color") String color);
+
 
 }

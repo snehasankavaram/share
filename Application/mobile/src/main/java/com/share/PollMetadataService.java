@@ -10,9 +10,7 @@ import com.example.james.sharedclasses.FileMetadataWrapper;
 import com.example.james.sharedclasses.GetFilesRequestWrapper;
 import com.example.james.sharedclasses.LoginUtils;
 import com.example.james.sharedclasses.ServerEndpoint;
-import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.ResponseBody;
-import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,13 +35,13 @@ public class PollMetadataService extends Service {
         super.onCreate();
         Log.d(TAG, "on create called");
         user = LoginUtils.getLoginToken(this);
-        OkHttpClient client = new OkHttpClient();
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        client.interceptors().add(interceptor);
+//        OkHttpClient client = new OkHttpClient();
+//        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+//        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//        client.interceptors().add(interceptor);
         retrofit = new Retrofit.Builder()
                 .baseUrl(getString(R.string.WEBSITE_URL))
-                .client(client)
+//                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
